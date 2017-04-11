@@ -1,1 +1,1 @@
-/project1/ contains all reports, supplementary material, and/or slides for mini-project 1.
+This folder contains all student reports, supplementary material, and/or slides for mini-project 1.
