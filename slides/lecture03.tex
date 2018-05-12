@@ -1,0 +1,238 @@
+\documentclass[twoside]{article}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{pb-diagram}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{bbm}
+\usepackage{color}
+% \usepackage{psfig}
+
+\theoremstyle{definition}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+%\newenvironment{pf}{{\noindent\sc Proof. }}{\qed}
+\newenvironment{map}{\[\begin{array}{cccc}} {\end{array}\]}
+\newcommand{\DS}{\displaystyle}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem*{exmp}{Example}
+\newtheorem*{prob}{Problem}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remark}
+\newtheorem*{note}{Note}
+\newtheorem*{exer}{Exercise}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0.25 in}
+\setlength{\parskip}{0.1 in}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \setcounter{section}{0}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf Mathematical Introduction for Data Analysis \hfill #4} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: #2, HKUST \hfill Scribe: #3} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+%%%%%%%
+% Some commonly used notations in Learning Theory
+%%%%%%%
+
+\def\R{{\mathbb R}}
+\def\N{{\mathbb N}}
+\def\L{{\mathcal L}}
+\def\Z{{\mathbb Z}}
+\def\X{{\mathcal X}}
+\def\Y{{\mathcal Y}}
+\def\E{{\mathbb E}}
+\def\diag{{\rm diag}}
+\def\sign{{\rm sign}}
+\def\span{{\rm span}}
+\def\supp{{\rm supp}}
+\def\Pr{{\rm Prob}}
+\def\H{{\cal{H}}}
+\def\D{{\cal{D}}}
+\def\U{{\cal{U}}}
+\def\ie{{\it i.e. }}
+\def\etc{{\it etc. }}
+\def\etal{{\it et al. }}
+
+\def\De{{\Delta}}
+\def\P{{\rm Prob}}
+
+\begin{document}
+
+\lecture{Lecture 3. MLE, Stein's Phenomena and Nonlinear Estimators}{Yuan Yao}{Xia, Jiacheng; with aid by Dong, Chenyang}{Feb. 20, 2017}
+
+%\setcounter{section}{0}
+%\section*{Introduction}
+
+\section{Review of risk}
+Recall that in the previous lectures, we discussed MLE estimator: if $X_i \sim N(\mu, \Sigma)$ (i.i.d.), for $i = 1,2,...,n, X_i \in \mathbb{R}^p$, then MLE estimator for mean and variance is:
+\begin{eqnarray}
+\hat{\mu}^{MLE}_n & = & \frac{1}{n} \sum_{i=1}^n X_i, \\
+\hat{\Sigma}^{MLE}_n & = & \frac{1}{n} \sum_{i=1}^n (X_i - \hat{\mu})(X_i - \hat{\mu})^T.
+\end{eqnarray}
+With the definition of risk to estimate $\hat \mu$: \begin{equation}
+R(\mu) \equiv \mathbb{E}  \| \hat \mu - \mu \| ^2
+\end{equation}
+Although the definition of the risk includes $\mu$ and hence made it hard to calculate, this definition can be shown to be in some way equivalent to \textit{prediction error}. \\
+Let the prediction error be $\mathbb{E}_{(y|x_{i}^n)} \| \hat\mu - y \|$, for simplicity $y = \mu + \epsilon$, where $\epsilon \sim N(0, \epsilon)$.
+$$ \mathbb{E}_{x_i}(\mathbb{E}_{y|x_i} \| (\hat\mu-\mu)-\epsilon\| ^ 2) = \mathbb{E}_{x_i}(\mathbb{E}_{\epsilon|x_i} \| (\hat\mu-\mu) \| ^ 2 - 2 \mathbb{E}_{\epsilon|x_i}<\epsilon, \hat\mu-\mu> + \mathbb{E}(\|\epsilon\|)^ 2) = \mathbb{E}_{(x_i)_1^n} \| \hat\mu-\mu \|^2 + Var(\epsilon)$$
+The first term of solution is just Risk by definition, and second being constant independent with $\mu$. So minimizing risk $R$ is equivalent to minimizing prediction error.\\
+In the following sections we would discuss the risk of several estimators.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{MLE estimator}
+MLE is an unbiased estimator, but not of least risk.
+In the following part of this note, we would define $P\equiv R(\hat\mu^{MLE})$, $Y\equiv {\hat\mu^{MLE}}$. In the previous lecture we have shown that $\hat\mu^{MLE}$ is unbiased. i.e. $\mathbb{E[\hat\mu]} = \mu$.\\
+If we further assume $k$-sparse, or energy is concentrating on top $k$ components, $k\equiv \# \{ i | \mu_i \neq 0\} \ll p$. Further assume:
+$$ \sum_{i=1}^{p} {\mu_i} \equiv \| \mu \| = ck $$
+for some constant c. Then 
+\begin{equation}
+R(\hat\mu_{MLE}) = \frac{p}{1+\frac{p}{ck}}=\frac{kp}{k+\frac{p}{c}}
+\end{equation}
+The risk would be smaller than p if p is large.
+%%%%%%%%
+\section{Linear estimator}
+For some constant c, $$\mu_c \equiv c \cdot Y, C \equiv diag(c_i)$$ for $i \in [1,p]$, and $C \in \mathbb{R}^{p \times p}$. We can use $L_1$ regularization: $$ \arg\min_{\hat\mu} \frac{1}{2} \| \hat\mu - Y \| + \lambda \| \hat\mu \| \Rightarrow \mu_\lambda = \frac{1}{1+\lambda}Y, c_i = \frac{1}{1+\lambda}$$
+Where we can select a special values for C: $C=\frac{1}{1+\lambda}I_p$. In this case: \begin{equation} 
+R(\hat\mu_c) = \sum_{i=1}^{p}c_i + \sum_{i=1}^{p}(1-c_i)^2\mu_i^2 = \frac{P}{(1+\lambda)^2}+\frac{\lambda^2}{(1+\lambda)^2}\sum_{i=1}^{p}c_i
+\end{equation}
+To minimize the risk, $\frac{dR(\hat\mu_c)}{d\lambda} = 0$. Again we select a special $\lambda' = \frac{p}{\|\mu\|^2}$ such that $$
+R(\mu_{\lambda*}) = \frac{p}{\frac{p}{\| \mu \|^2} + 1}$$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Non-linear James-Stein estimator}
+Previously we also discussed non-linear James-Stein (JS) estimator: \begin{equation}
+\hat\mu_{JS} \equiv 1-\frac{p-2}{\|Y\|^2}Y.
+\end{equation}
+We omit the complicated derivation of risk for JS-estimator (can be found at Johnstone [GE]) and draw conclusion here:
+\begin{equation}
+R(\hat\mu_{JS}) = p - \mathbb{E}[\frac{p-2}{\|Y\|^2}] < p.
+\end{equation}
+From the equation we can notice that this holds for $p \ge 3$. In fact $R(\hat\mu_{JS})$ approximates the risk of MLE as $\| \mu \|$ increases.
+
+\subsection{Inadmissibility}
+We say an estimator of mean $\hat\mu$ is inadmissible if there exists another estimator $\mu^*$ which can \emph{beat} $\hat{\mu}$ in the following sense.
+\begin{defn}[Inadmissible]
+  An estimator $\hat{\mu}_{n}$ of the parameter $\mu$ is called \textbf{inadmissible} on $\R^p$ with respect to the squared risk if there exists another estimator $\mu^*_n$ such that
+  $$\E\|\mu_{n}^*-\mu\|^2 \leq \E\|\hat{\mu}_n-\mu\|^2\qquad \textrm{for all }\mu\in\R^p,$$
+  and there exist $\mu_0\in\R^p$ such that
+  $$\E\|\mu_{n}^*-\mu_0\|^2<\E\|\hat{\mu}_n-\mu_0\|^2.$$
+  In this case, we also call that $\mu_n^*$ \textbf{dominates} $\hat{\mu}_{n}$ .  
+  Otherwise, the estimator $\hat{\mu}_{n}$ is called \textbf{admissible}.
+\end{defn}
+Intuitively this is a notion that $\hat\mu$ can be ``beaten" by some other estimator. Previous sections have shown that $\hat\mu_{MLE}$ is inadmissible. Also note that $\hat\mu_{JS}$ is also inadmissible, we can find a new estimator $\hat\mu_{JS^+} \equiv (1-\frac{p-2}{\| Y-2 \|^2}) + Y$ as a counter-example.\\ 
+However, $\hat\mu_{L.E.}$ can be admissible iff: \\
+$1$. $C$ is symmetric.\\
+$2$. eigenvalues of $C$, $0 \le \rho_i(C) \le 1$ for all $i$.\\
+$3$. $\rho_i(C) = 1$ for at most two $i$'s.\\
+holds for the same time. Again, we refer to Johnstone [GE] for the details of this proof.
+%\subsection{A part that is not clear.}
+%%%%%%%%%%
+\section{Lasso / Soft-thresholding}
+\subsection{subgradient}
+For convex function $f(x)$, the subgradient $\partial f(x) \equiv \{ \mu \in \mathbb{R}^p | \forall x \in \mathbb{R}^p, f(x) \ge f(x_0) + <\mu, x-x_0>\}$. By this definition, if $\nabla f(x_0)$ exists, it is equal to the subgradient, otherwise subgradient would be a set function.
+
+Example:
+$$ \partial|x| = \begin{cases}\{1\},&x>0;\\ [-1,1],& x=0;\\\{-1\},& x<0.\end{cases}$$
+
+\subsection{risk of Lasso}
+In this seciton $\| \mu \|_1 \equiv \sum {\mu_i} $, and \begin{equation}
+\hat\mu^{lasso} \equiv \arg \min_{\tilde\mu} \frac{1}{2} \| y - \tilde\mu \|^2 + \lambda \| \tilde\mu \|
+\end{equation}
+This satisfies KKT condition of first order: $$(\tilde\mu - y) + \lambda \partial \| \mu \|_1 \ni 0$$\\
+So it has to satisfy $\hat\mu_i = y - \lambda\partial \| \mu \|$. If $\mu_i = 0, \lambda \in [-1,1]$, otherwise $\mu_i
+ = \sign(\mu_i)$. \begin{equation} \mu_i = \sign(y_i) \cdot \max(|y_i|-\lambda, 0). \end{equation}
+For the risk of Lasso, we have: $$R(\hat\mu_{lasso}) = p - \mathbb{E}[2\sum_{i=1}^p Id(|y_i| \le \lambda) - \sum_{i=1}^p y_i^2 \wedge \lambda])$$ Let $\lambda = \sqrt{2\log p}$, $R(\hat\mu_{lasso} \le 1+(2 \log p + 1) \sum_{i=1}^p 1 \wedge \mu^2$ (here $1 \wedge \mu^2 \equiv \min(1, \mu^2)$). Assume k-sparcity: $k = \# {i: \mu_i = 0} \ll p$, \begin{equation}
+R(\hat\mu_{lasso}) \sim O(k\log p) \ll p\end{equation}
+
+%%%%%%%%%
+\section{Hard-thresholding / $L_0$-regularization}
+$$\hat\mu_{hard}  \equiv \arg \min_{\tilde \mu} \| y - \tilde \mu\| ^2 + \lambda ^2 \|\mu\|_0$$
+Here $\|\mu\|_0$ is the zero-penalty, numbers such that $\tilde\mu_i \neq 0$.\\
+$\hat\mu_{hard} = y_i if |y_i| \ge \lambda$, and equals to $0$ otherwise. We can make an element-wise analysis:
+$$\min Q(\tilde\mu_i)\equiv \| y_i-\mu_i\| ^ 2 + \lambda^2 \mathbbm{1}(\mu_i \ne 0) = \min (y_i^2, \lambda^2)$$
+$$\mathbb{E}(\tilde\mu_i^{hard} \ne 0) = \mathbb{E}[y_i] = \mu_i$$
+This means that we need a unbiased, non-zero guess. It turn out that the error term of hard-thresholding, if using $\lambda = \sqrt{2\log p}$, is: \begin{equation}
+R(\hat\mu_i^{hard}) \sim O(k\log p + \delta) \ll p
+\end{equation}
+This element-wise analysis combined with concentration inequality can give that, if $y_i \sim N(0, I_p)$, 
+$$ Pr(\max_{1 \le i \le p} |y_i| \ge \sqrt{2\log p}) \le \frac{1}{\sqrt{\pi\log p} }$$
+Although hard thresholding provides an "unbiased" estimator, its variance can be greater than lasso, actually it is better when $\hat\mu$ is large.
+
+%%%%%%%%%
+\section{Non-convex regularization}
+\begin{equation}
+\hat\mu_\lambda^{non-conv} = \arg \min \frac{1}{2} \| y-\mu \|^2 + \lambda \sum_{i=1}^{p} \rho(|\tilde\mu_i|)
+\end{equation}
+To find minimizer we can use first-order derivative to run iterations: $$ 0 = \tilde\mu_i - y_i + \lambda\frac{d\rho}{d|\mu_i|}$$
+The goal of such regularization is to make $\rho' \rightarrow 0$ when $|\hat\mu|$ is large, a cusp in the vicinity of 0, and a singularity point at 0 (when $|\hat\mu|$ is small.)\\
+However it is NP-hard to find a global optimizer. An empirical approach would be starting from a lasso estimator and run iterations until local convergence, but some further condition on $\mu$ is required to achieve global convergence.
+\section{Linearized Bregman Iteration}
+\begin{equation}
+0 = \tilde\mu_i - y_i + \lambda p(\tilde\mu)
+\end{equation}
+Given $t = \lambda$, we have $\frac{p(\tilde\mu)}{t} = -(\tilde\mu-y) = -\nabla(\frac{1}{2}\| y-\tilde\mu \|^2)$, where $p(\tilde\mu) \in \partial(\tilde\mu)$.\\
+If $\hat\mu_i\ne0$, $p(\hat\mu_i) = \pm1$, here $p$ is constant. $$\frac{d p_i}{dt} = -\hat\mu_i + y_i$$ or $\hat\mu_i = y_i$, $\hat\mu$ is unbiased estimator. Otherwise we get piecewise constant.
+The equation above is called Bragman ISS, it selects variable consistently under nearly same conditions as Lasso. To solve it, one can either use Simple Discretization (LBI):
+$$\frac{dp(\tilde\mu(t))}{dt} + \frac{1}{k}\frac{d\tilde\mu(t)}{dt} = -(\tilde\mu(t)-y)=-\nabla l(\tilde\mu(t))$$
+Or use Euler Discretization: $$
+\begin{cases} \frac{W_{t+1}-W_t}{\alpha} & = -\nabla l(\tilde\mu(t))\\            W_t & = p_t(\tilde\mu(t)) + \frac{\tilde\mu(t)}{k},\ \ \  p_t(\tilde\mu(t)) \in \partial \|\tilde{\mu}(t)\|_1 \end{cases}
+$$
+Which gives $\tilde\mu(t) = k \cdot shrink(W_t,1)=k\cdot\sign(W_t)\max(|W_t|-1,0)$
+\section{Consistency of variable selection}
+For high dimensional statistics, i.e. $$ \mu = X^{n\times p} \beta; n<p $$ We further assume sparsity($\# \beta_i \ne 0 = k \ll n < p $).\\
+There are two scenarios for this problem: \begin{itemize}
+\item{Noise free: $Y=X\beta$ $\rightarrow$ compressed sensing}
+\item{Noise: $Y=X\beta+\epsilon$, where $\epsilon$ is the subgaussian noise.}
+\end{itemize}
+There are two purposes for consistency: $L_2$ consistency and model selection consistency.
+\subsection{$L_2$ consistency}
+We now discuss restricted eigenvalue condition for Lasso. The Hessian of loss is defined as:
+$$\hat\Sigma_n \equiv \frac{1}{n}X^TX \geq 0$$
+where $n < p, rank(\hat\Sigma_n)<p$, it is convex but not strongly convex.
+$$\Delta = \hat\beta_{lasso}-\beta; \{\Delta^T\Sigma_n\Delta \ge \gamma \| \Delta \|^2: \gamma > 0, \| \Delta_{S^\perp} \|_1\leq c\|\Delta_S\|_1 \}$$.
+Here $\| \hat\beta_{S^\perp}^{lasso} - \beta_{S^\perp} \|$ has to be small, and $S^\perp$ is the non-support set.
+\\
+It is minimax optimal up to $\log p$, $R(\hat\mu_{lasso}) \le O(\sqrt{\frac{k\log p}{n}})$
+
+\subsection{Model selection consistency}
+Model selection consistency concerns with the question that under what conditions an estimator $\hat\beta$ recovers the sparsity pattern of the ground truth $\beta$, i.e. $\supp(\hat(\beta))=\supp(\beta)$ or a slightly stronger one, $\sign(\hat\beta)=\sign(\beta)$. The latter is often called \emph{sign-consistency}. The following two conditions are necessary and sufficient for Lasso's model selection consistency, as well as many other algorithms including Linearized Bregman Iterations.
+
+\subsubsection{Irrepresentable(Incoherence) Condition (IRR)}
+$$\forall j \in S_1^\perp, \| (\frac{1}{n}X_S^TX_S)^{-1}X_S^TX_j \|_1 \le 1-\eta (\eta>0)$$
+IRR is stronger than RE.
+\subsubsection{Strong signal}
+$\min|\beta_i| > O(\sqrt{\frac{k\log p}{n}}) \approxeq \hat\lambda_n$.
+$supp(\beta^{lasso}_{\hat\lambda_n}) = S; \sign(\beta^{lasso}_{\hat\lambda_n}) = \sign(\beta)$ holds with very high probability.
+\end{document}
+
+

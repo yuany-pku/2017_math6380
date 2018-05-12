@@ -1,0 +1,440 @@
+\documentclass[twoside]{article}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{pb-diagram}
+
+\usepackage{bbm}
+\usepackage{color}
+
+\usepackage{algorithm}  
+\usepackage{algorithmic}  
+% \usepackage{psfig}
+
+\theoremstyle{definition}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+%\newenvironment{pf}{{\noindent\sc Proof. }}{\qed}
+\newenvironment{map}{\[\begin{array}{cccc}} {\end{array}\]}
+\newtheorem*{property}{Property}
+\newcommand{\DS}{\displaystyle}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem*{exmp}{Example}
+\newtheorem*{prob}{Problem}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remark}
+\newtheorem*{note}{Note}
+\newtheorem*{exer}{Exercise}
+\newtheorem*{example}{Example}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0.25 in}
+\setlength{\parskip}{0.1 in}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \setcounter{section}{0}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf Mathematical Introduction for Data Analysis \hfill #4} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: #2, HKUST \hfill Scribe: #3} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+%%%%%%%
+% Some commonly used notations in Learning Theory
+%%%%%%%
+
+\def\R{{\mathbb R}}
+\def\N{{\mathbb N}}
+\def\L{{\mathcal L}}
+\def\Z{{\mathbb Z}}
+\def\X{{\mathcal X}}
+\def\Y{{\mathcal Y}}
+\def\E{{\mathbb E}}
+\def\diag{{\rm diag}}
+\def\sign{{\rm sign}}
+\def\span{{\rm span}}
+\def\supp{{\rm supp}}
+\def\Pr{{\rm Prob}}
+\def\H{{\cal{H}}}
+\def\D{{\cal{D}}}
+\def\U{{\cal{U}}}
+\def\ie{{\it i.e. }}
+\def\etc{{\it etc. }}
+\def\etal{{\it et al. }}
+
+\def\De{{\Delta}}
+\def\P{{\rm Prob}}
+
+\begin{document}
+
+\lecture{Lecture 5. LDA, SIR, MDS and RKHS}{Yuan Yao}{Zhao Yuqi}{Mar, 13, 2017}
+\section{Review of PCA}
+In the previous lectures, we discussed Principal Component Analysis(PCA) and its generalitzion. 
+\begin{enumerate}
+\item Classical PCA in two different view:
+\begin{enumerate}
+  \item Geometry: Looking for best affine space to approximate a high dimensional Euclidean data. 
+  \item Statistics: For a signal-noise model $Y = X+\epsilon$, recovering signal direction from principal component analysis on noisy measurements $Y$.
+\end{enumerate}
+\item Robust PCA: Looing for the decomposition $X = L + S$, 
+      where \begin{itemize}
+            \item $L$ is a low rank matrix;
+            \item $S$ is a sparse matrix.
+          \end{itemize}
+\item Sparse PCA: Locating sparse principal component.
+\end{enumerate}
+Those algorithms are all efficient unsupervised dimension reducation methods. However, with label attaching data, some supervised feature extraction techniques can be used to increase the computational efficiency. 
+
+\section{Linear discriminant analysis}
+[Fisher's] \emph{Linear discriminant analysis}(LDA), like PCA, is look for linear combinations of features which best explain the data. However, LDA explicitly attempts to model the difference between the classes of data. 
+
+For given data $(X_i,y_i)$, where $X_i \in \mathbb{R}^p$, and $y_i$ is discrite in ${\{1,2,...,K\}}$ not ordered.
+
+In LDA, we want obtain feature vectors such that captures most variance between class and meanwhile discard the variance within class. 
+
+Consider between class convariance matrix 
+$$\hat{\Sigma}_B^{p\times p} = \frac{1}{K} \sum_{k=1}^K(\hat{\mu_k} - \hat{\mu})(\hat{\mu_k} - \hat{\mu})^T ;$$  
+and within class covariance matrix 
+$$\hat{\Sigma}_W^{p\times p}  = \frac{1}{N-K} \sum\limits_{k=1}^K\sum\limits_{y_i=k}(X_i - \hat{\mu}_k)(X_i - \hat{\mu}_k)^T ,$$
+where $\hat{\mu}$ is sample mean and $\hat{\mu}_k$ is within class means, i.e. 
+$$\hat{\mu}_k = \frac{1}{N_k} \sum\limits_{y_i=k} X_i.$$ 
+
+Therefore $$ R(w) = \frac{w^T \hat{\Sigma}_B w}{ w^T \hat{\Sigma}_W w} $$ 
+measures, in some sence, `signal-to-noise ratio' in terms of direction $w$. 
+
+Intuitively, if $\hat{\Sigma}_W$ is inversiable, the eigenvector corresponding the largest eigenvalues of $\hat{\Sigma}_W^{-1} \hat{\Sigma}_B$ will maximize $S$. Accordingly, the best feature vectors would be eigenvectors corresponding top $k$ eigenvalues, i.e.
+$$U_k = [u_1,u_2,...,u_k], \quad u_k \in \mathbb{R}^n, $$
+where $\hat{\Sigma}_B u_k = \hat{\Sigma}_W \lambda_k u_k$ and $\lambda_1 \ge \lambda_2 \ge ... 
+\ge \lambda_k$.
+
+
+\begin{note}
+ For \emph{Generalized Eigen Decomposition}(G.E.D) problem $\hat{\Sigma}_B \phi =  \lambda \hat{\Sigma}_W \phi $, it is more efficient to solve Eigen Decomposition problem $\hat{\Sigma}_W^{-\frac{1}{2}} \hat{\Sigma}_B \hat{\Sigma}_W^{-\frac{1}{2}} \varphi = \lambda \varphi$ first and scale $\varphi$ by $\hat{\Sigma}_W$, i.e. $\phi = \hat{\Sigma}_W^{-\frac{1}{2}} \varphi $.
+ \end{note}
+
+\renewcommand{\algorithmicrequire}{ \textbf{Input:}} %Use Input in the format of Algorithm  
+\renewcommand{\algorithmicensure}{ \textbf{Output:}} %UseOutput in the format of Algorithm  
+
+\begin{algorithm}[htb]   
+\caption{Linear Discriminate Analysis}   
+\label{alg:lda}   
+\begin{algorithmic}[1] %这个1 表示每一行都显示数字  
+\REQUIRE ~~\\ %算法的输入参数：Input  
+ Data with label $\{X_i,y_i\}_{i=1}^N $
+\ENSURE ~~\\ %算法的输出：Output  
+Effective dimension reducing directions $U_k$
+
+\STATE Compute sample mean $$\hat{\mu} = \frac{1}{N} \sum\limits_{i=1}^N X_i ;$$   
+\STATE Compyte within class means $$ \hat{\mu}_k = \frac{1}{N_k} \sum\limits_{y_i=k} X_i ;$$ 
+\STATE Compute Between class covariance matrix 
+ $$\hat{\Sigma}_B^{p\times p} = \frac{1}{K} \sum_{k=1}^K(\hat{\mu_k} - \hat{\mu})(\hat{\mu_k} - \hat{\mu})^T ;$$  
+\STATE Compute Within class covariance matrix 
+ $$\hat{\Sigma}_W^{p\times p}  = \frac{1}{N-K} \sum\limits_{k=1}^K\sum\limits_{y_i=k}(X_i - \hat{\mu}_k)(X_i - \hat{\mu}_k)^T;$$
+\STATE Generalized Eigen decomposition $\hat{\Sigma}_B = \hat{\Sigma}_W U\Lambda U^T $ with $\Lambda = diag(\lambda_1,\lambda_2,...\lambda_n)$ where  $\lambda_1 \ge \lambda_2 \ge ... \ge \lambda_k$ ;
+\STATE Choose eigenvectors corresponding to top $k$ nonzero eigenvalues, $U_k$ i.e.
+$$U_k=[u_1,\ldots,u_k], \ \ \ u_k\in \R^n ;$$ 
+
+\RETURN $U_k$ . %算法的返回值  
+\end{algorithmic}  
+\end{algorithm}  
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Sliced Inverse Regression} 
+
+
+[Ker-Chau Li] \emph{Sliced inverse regression}(SIR) is a dimension reduction method using inverse regression. The idea is to find a smooth regression function that operates on a variable set of projections.
+\subsection{Inverse Regression versus Regression}
+\textbf{Regression:}  $f(X) = \mathop{\mathbb{E}}[y|X]$, a curve in $\mathbb{R}^{p+1}$ ;\\
+\textbf{Inverse Regression:} $g(y) = \mathop{\mathbb{E}}[X|y]$, a curve in $\mathbb{R}^{p+1}$ called the inverse regression curve.
+\subsection{Model}
+Given a reponse variable $Y$ and a random vector $X\in \mathbb{R}^p$ of explanatory variables, SIR is based on the model 
+$$Y = g(\mathnormal{\Gamma} X, \epsilon) \ ,$$
+where $\mathnormal{\Gamma}^{k\times p}$ is a unknown projection and $k<p$, and $g$ is infinite dimensional with some linearity condition, not arbitrary.
+
+\begin{algorithm}[htb]   
+\caption{Sliced Inverse Regression}   
+\label{alg:sir}   
+\begin{algorithmic}[1] %这个1 表示每一行都显示数字  
+\REQUIRE ~~\\ %算法的输入参数：Input  
+ Data with label $\{X_i,y_i\}_{i=1}^N$, where $X_i\in \mathbb{R}^p$, $y_i\in \mathbb{R}$ is continuous(or ordered discrite)
+\ENSURE ~~\\ %算法的输出：Output  
+Effective dimension reducing directions $\mathnormal{\Gamma}_k$
+\STATE Divede the range of $y_i$ into $S$ nonoverlapping slices $H_s(s = 1,...,S)$. $N_s$ is the number of observations within each slice ; 
+\STATE Compute the sample mean and total covariance matrix 
+  $$\hat{\mu} = \frac{1}{N} \sum\limits_{i=1}^N X_i,\quad\quad\hat{\Sigma}^{p\times p} = \frac{1}{K} \sum_{i=1}^N(X_i - \hat{\mu})(X_i -\hat{\mu})^T \ ; $$   
+\STATE Compyte the mean of $X_i$ over all slices and Between slices covariance matrix 
+ $$ \hat{\mu}_k = \frac{1}{N_s} \sum\limits_{y_i\in H_s } X_i, \quad \quad \hat{\Sigma}_B^{p\times p} = \frac{1}{N} \sum_{h}^K(\hat{\mu_k} - \hat{\mu})(\hat{\mu_k} - \hat{\mu})^T\  ;$$
+\STATE Generalized Eigen decomposition 
+$\hat{\Sigma}_B = \hat{\Sigma} U\Lambda U^T $ with $\Lambda = diag(\lambda_1,\lambda_2,...\lambda_n)$ where  $\lambda_1 \ge \lambda_2 \ge ... \ge \lambda_k$ ;
+\STATE Choose generalized eigenvectors corresponding to top $k$ nonzero eigenvalues, $\mathnormal{\Gamma}_k$ i.e.
+$$\mathnormal{\Gamma}_k=[u_1,\ldots,u_k], \ \ \ u_k\in \R^n ;$$ 
+\RETURN $\mathnormal{\Gamma_k}$ . %算法的返回值  
+\end{algorithmic}  
+\end{algorithm}  
+\subsection{Localized SIR}
+[Wu-Liang-Mukherjee, 2009]\emph{Localized Sliced Inverse Regression}(LSIR) allows for supervised dimension reducion by projection onto a linear subspace that captures the nonlinear subspace relevant to predicting the response.
+
+\begin{algorithm}[htb]   
+\caption{Localized Sliced Inverse Regression}   
+\label{alg:lsir}   
+\begin{algorithmic}[1] %这个1 表示每一行都显示数字  
+\REQUIRE ~~\\ %算法的输入参数：Input  
+ Data with label $\{X_i,y_i\}_{i=1}^N$, where $X_i\in \mathbb{R}^p$, $y_i\in \mathbb{R}$
+\ENSURE ~~\\ %算法的输出：Output  
+Effective dimension reducing directions $\mathnormal{\Gamma}_k$
+
+\STATE Compute total covariance matrix $\hat{\Sigma}$ as in SIR; 
+\STATE Divede the range of $y_i$ into $S$ nonoverlapping slices $H_s(s = 1,...,S)$;
+\STATE For each sample $(X_i,y_i)$ compute 
+ $$ \hat{\mu}_{i,loc} = \frac{1}{|s_i|} \sum\limits_{j\in s_i } X_j ,$$
+ where $s_i = \{j: x_j \text{ belongs to the $k$ nearest neighboors of $x_i$ in $H_s$}\}$ and $s$ indexes the slice $H_s$ to which $i$ belongs;
+
+\STATE Compyte a localized version of $\hat{\Sigma}_B$ 
+$$ \hat{\Sigma}_{loc}  = \frac{1}{N} \sum\limits_{i} (\hat{\mu}_{i,loc} - \hat{\mu})(\hat{\mu}_{i,loc} - \hat{\mu})^T \ ;$$
+ 
+\STATE Solve the generalized Eigen decomposition problem 
+$\hat{\Sigma}_{loc} = \hat{\Sigma} U\Lambda U^T $ with $\Lambda = diag(\lambda_1,\lambda_2,...\lambda_n)$ where  $\lambda_1 \ge \lambda_2 \ge ... \ge \lambda_k$;
+\STATE Choose generalized eigenvectors corresponding to top $k$ nonzero eigenvalues, $\mathnormal{\Gamma}_k$ i.e.
+$$\mathnormal{\Gamma}_k=[u_1,\ldots,u_k], \ \ \ u_k\in \R^n \;;$$ 
+\RETURN $\mathnormal{\Gamma_k}$ . %算法的返回值  
+\end{algorithmic}
+\end{algorithm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Classical Multidimensional Scaling}
+  \emph{Classical Multidimensional Scaling}(CMDS,MDS) aims to construct Euclidean coordinates for each object in $N$-dimensional space such that the given between-object distances are preserved as well as possible, in particular 
+
+Given pairwise distaneces between $n$ data point 
+$$ D = [d_{ij}^2] \quad where \quad d_{ii} = 0, d_{ij}\ge 0 $$
+
+construct a system of Euclidean coordinates $\{x_i\}_{i=1}^n\in \mathbb{R}^k \quad s.t. \quad \|x_i-x_j\| =d_{ij} \quad \forall \; i,j$
+
+\subsection{Forward Problem}
+
+Given a set of points $x_1, x_2, ..., x_n \in \mathbb{R}^p$, let 
+$$ X = [x_1, x_2, ..., x_n]^{p\times n}\;.$$
+The distance between point $x_i$ and $x_j$ satisfies 
+$$ d_{ij}^2 = {\|x_i - x_j\|}^2 = {(x_i-x_j)}^T(x_i-x_j) = {x_i}^T x_i + {x_j}^T x_j - 2{x_i}^Tx_j\ . $$
+
+\subsection{Inverse Problem}
+Given $d_{ij}$, find a $\{x_i\}$ satisfying the relations above. Clearly the solutions are not unique as any Euclidean transform on $\{x_i\}$ gives another solution. General ideas of classic (metric) MDS is:
+\begin{enumerate}
+\item transform squared distance matrix $D=[d_{ij}^2]$ to an inner product form;
+\item compute the eigen-decomposition for this inner product form. 
+\end{enumerate} 
+
+
+\subsection{Relationship between $\tilde{X}$ and $D$}
+
+Define inner product matrix 
+$$ K_{ij} = \langle x_i,x_j\rangle, $$ 
+and let $k = \diag \{K_{ii}\} \in \mathbb{R}^n,$ then 
+$$D_{ij} = k_{ii} + k_{jj} - 2k_{ij} \quad or$$
+$$ D = k\cdot {\mathbf{1}}^T + \mathbf{1} \cdot k^T -2K, $$
+where $\mathbf{1} = (1,1,..., 1)^T \in \mathbb{R}^n$. 
+
+For the centered data 
+$$ \tilde{X}^{p\times n} = XH ,$$ 
+the inner produce matrix is
+
+\begin{eqnarray*}
+\tilde{K}^{n \times n} &=& \tilde{X}^T \tilde{X}^T \\
+ &=& H^T (X^TX)H \\
+ &=& HKH.
+\end{eqnarray*}
+
+Construct 
+\begin{eqnarray*}
+B &=& -\frac{1}{2} H^T D H \\
+&=& -\frac{1}{2} H^T (k\cdot {\mathbf{1}}^T + \mathbf{1} \cdot k^T -2K)H \\
+&=& H^T K H \\
+&=& \tilde{K},
+\end{eqnarray*}
+since 
+$$ H^T \mathbf{1} = (I - \frac{1}{n}\mathbf{1}\mathbf{1}^T)\cdot \mathbf{1} = 0.$$
+
+Therefore, Eign-decomposition applied to $B = -\frac{1}{2}HDH^T$ will give rise the Euclidean coordinates $\tilde{X}$. 
+
+In practice, one often chooses top $k$ nonzero eigenvectors of $B$ for a $k$-dimensional Euclidean embedding of data.
+
+
+\begin{algorithm}[htb]   
+\caption{Classical MDS Algorithm}   
+\label{alg:cmds}   
+\begin{algorithmic}[1] %这个1 表示每一行都显示数字  
+\REQUIRE ~~\\ %算法的输入参数：Input  
+A squared distance matrix $ D^{n\times n} $ with $D_{ij} = d_{ij}^2$;
+\ENSURE ~~\\ %算法的输出：Output  
+Euclidean $k$-dimensional coordinates $\widetilde{X}_k\in \R^{k\times n}$ of data.
+\STATE Compute $\displaystyle B = - \frac{1}{2} H \cdot D \cdot H^T $, where $H$ is a centering matrix;   
+\STATE 
+Eigenvalue decomposition\ $ B = U \Lambda U^T $ with $\Lambda=\diag(\lambda_1,\ldots,\lambda_n)$ where
+$\lambda_1\geq \lambda_2\geq \ldots \geq\lambda_n\geq 0 $;\\ 
+\STATE Choose top $k$ nonzero eigenvalues and corresponding eigenvectors, $ \widetilde{X}_k = U_k{\Lambda_k}^\frac{1}{2} $ where 
+$$U_k=[u_1,\ldots,u_k], \ \ \ u_k\in \R^n,$$
+$$\Lambda_k=\diag(\lambda_1,\ldots,\lambda_k)$$
+with $\lambda_1\geq \lambda_2\geq \ldots \geq\lambda_k> 0 $;   
+
+\RETURN $\widetilde{X}_k$; %算法的返回值  
+\end{algorithmic}
+\end{algorithm}
+
+\section{Generalized MDS}
+
+\begin{defn}[Positive Semi-definite]
+Suppose $A^{n\times n}$ is a real symmetric matrix,then:\\
+$A$ is \emph{positive semi-definite}($p.s.d.\; or\; A\succeq 0)$ $\iff \forall v \in \R^n,v^TAv \geq 0 \iff A=Y^TY$
+\end{defn}
+
+\begin{property}
+Suppose $A^{n\times n}$, $B^{n\times n}$ are real symmetric matrix, $A\succeq 0$, $B\succeq 0$. Then we have:
+\begin{enumerate}
+\item $A+B\succeq 0$;
+\item $A\circ B\succeq 0$;
+\end{enumerate}
+where $A\circ B$ is called Hadamard product and $(A\circ B)_{i,j}:=A_{i,j}\times B_{i,j}$.
+\end{property}
+
+
+\begin{defn}[Conditionally Negative Definite]
+Let $A^{n\times n}$ be a real symmetric matrix. $A$ is \emph{conditionally negative definite}(c.n.d.) if \\
+$$\forall v \in \R^n, \quad s.t.\quad \mathbf{1}^T v=\sum^n_{i=1}v_i=0,\ \text{there holds}\quad  v^TAv \leq 0$$
+\end{defn}
+
+\begin{lem}[Young/Househ\"{o}lder-Schoenberg '1938]\label{lem:1} 
+For any signed probability measure $\alpha$ ($\alpha \in \R^n,\sum^n_{i=1}\alpha_i=1)$,
+$$B_\alpha = -\frac{1}{2}H_\alpha C H_\alpha^T \succeq 0 \iff \mbox{$C$ is c.n.d.} $$
+where $H_\alpha$ is Householder centering matrix: $H_\alpha = \mathbf{I} - \mathbf{1}\cdot \alpha^T$.
+\end{lem}
+
+Note: $u = \frac{1}{n} \cdot \mathbf{1}$ gives the perious result: squared distance matrix is c.n.d.
+
+
+Sometimes, we may want to transform a square distance matrix to another square distance matrix. The following theorem tells us the form of all the transformations between squared distance matrices.
+
+\begin{thm}[Schoenberg Transform]
+Given $D$ a squared distance matrix, $C_{i,j}=\Phi(D_{i,j})$. Then
+$$\mbox{$C$ is a squared distance matrix $\iff \Phi$ is a Schoenberg Transform.}$$
+\end{thm}
+
+A \emph{Schoenberg Transform} $\Phi$ is a transform from $\R^+$ to $\R^+$, which takes $d$ to 
+$$\Phi (d)=\int_0^\infty \frac{1-\exp{(-\lambda d)}}{\lambda}g(\lambda)d\lambda, $$ 
+where $g(\lambda)$ is some nonnegative measure on $[0,\infty)$ s.t 
+$$\displaystyle \int_0^\infty \frac{g(\lambda)}{\lambda}d\lambda<\infty.$$
+Examples of Schoeberg transforms include 
+\begin{itemize}
+\item $\phi_0(d)=d$ with $g_0(\lambda)=\delta(\lambda)$;
+\item $\displaystyle \phi_1(d) = \frac{1-\exp(-ad)}{a}$ with $g_1(\lambda) = \delta(\lambda-a)$ ($a>0$); 
+\item $\phi_2(d) = \ln (1 + d/a)$ with $g_2(\lambda) = \exp(-a \lambda)$; 
+\item $\displaystyle \phi_3(d)=\frac{d}{a(a+d)}$ with $g_3(\lambda)=\lambda \exp(-a \lambda)$;
+\item $\displaystyle \phi_4(d)=d^p$ ($p\in (0,1)$) with $\displaystyle g_4(\lambda) = \frac{p}{\Gamma(1-p)} \lambda^{-p}$. 
+\end{itemize}
+
+\section{Hilbert Space Embedding and Reproducing Kernels}
+\subsection{Hilbert Space Embedding}
+\begin{defn}[Positive Definite Function]
+A function $k: \mathcal{X}\times \mathcal{X} \mapsto \mathbb{R} $ is a \emph{positive definite function}(p.d.f) if it is symmetric and positive definite, i.e. 
+$$\sum\limits_{i,j} c_ic_jk(x_i,x_j)\ge 0, $$ 
+with euqality `=' holds iff $c_n=0, \ \forall n \in \mathbb{N}$. 
+
+Equivalently, the matrix $\{k(x_i,x_j)\}^{n\times n}$ is positive definite $\forall x_i\in \mathcal{X},\ \forall n\in \mathbb{N}$
+\end{defn}
+\begin{thm}[Schoenberg 38]
+A separable space $M$ with a metric function $d(x,y)$ can be isometrically imbedded in a Hilbert space $H$, if and only if the family of functions $e^{-\lambda d^2}$ are positive definite for all $\lambda>0$ (in fact we just need it for a sequence of $\lambda_i$ whose accumulate point is $0$).  
+\end{thm}
+
+\subsection{Reproducing Kernels Hilbert Space} 
+
+\begin{defn}
+A Reproducing Kernel Hilbert Space (RKHS) is a Hilbert space associated with a p.d.f $k(\cdot,\cdot)$ such that:
+\begin{enumerate}
+  \item $k_x \in H $, where $k_x = k(x,\cdot)$ 
+  \item linear span: $L:= {\sum\limits_x c_xk_x}$
+  \item inner product: $\langle k_x,k_y \rangle = k(x,y)$
+  extends to L: $\langle \sum\limits_x c_xk_x,\sum\limits_y c_yk_y\rangle = \sum\limits_{x,y} c_xc_yk(x,y)$
+  \item closure under induced norm $\|k_x\|_H = \sqrt{k(x,x)}$
+\end{enumerate}
+\end{defn}
+ 
+
+\begin{example} Some kernels in RKHS:
+\begin{enumerate}
+\item polynomial;
+\item piecewise polynomial, Sobolev, Splines; 
+\item wavelet(Daubeshies)
+\item Mercer kernel $\mathcal{X}$ is compact, $k(x,y)\in C(\mathcal{X},\mathcal{X})$
+\end{enumerate}
+\end{example}
+
+By Riesz representation, for every $x\in \X$ there exists $E_x \in \H$ such that $f(x) = \langle f, E_x\rangle$.
+
+The evaluation functional over the Hilbert space $H$ is a linear functional that evaluates each function at a point $x$, 
+$$ L_x : f \mapsto f(x) \quad \forall f\in H.$$
+
+Evaluation functional $L_x$ is bounded, $L_x(f) = f(x) = |\langle f,E_x \rangle| \le \|f\|_H\|E_x\|_H$.
+
+[Wahba 1990] All function models in Hilbert space in statistics are RKHS. 
+
+\begin{thm}[Moore–Aronszajn]
+Suppose K is a symmetric, positive definite kernel on a set $\mathcal{X}$. Then there is a unique Hilbert space of functions on $\mathcal{X}$ for which $k$ is a reproducing kernel, i.e., 
+$$f(x) = \langle f,k(\cdot,x)\rangle _H$$ . 
+\end{thm}
+
+\begin{thm}[Mercer]
+A continuous p.d.f $k$ defined on $\Omega \times \Omega $ has the expansion: 
+$$k(x,y) = \sum\limits_{i = 1} ^\infty \gamma_i \phi_i(x) \phi_i(y) ,$$ 
+where 
+$$\int_\Omega k(x,y)\phi_i(y)\, \textit{d}\mu(y) = \gamma_i \phi_i(x) ,$$
+and 
+\begin{itemize}
+  \item eigen values $\gamma_i \to 0 \,$;  
+  \item eigen functions $\{\phi_i\}$ form an orthonormal basis of $L_2(\Omega)$. 
+\end{itemize}
+The converange is absolute and uniform over $\Omega\times \Omega$.
+\end{thm}
+
+
+
+\subsection{Regularization and Repeoducing Kernel Hilbert Spaces}
+A general class of regularization problems has the form 
+$$\min\limits_{f\in \mathcal{H}} \sum\limits_{i=1}^n \ell(y_i,f(x_i)) +\lambda \|f\|^2_{\mathcal{H}},$$
+which is a infinite-dimensional problem. 
+
+It can be shown that the solution of this problem is finite-dimensional, and has the form 
+$$ f(x) = \sum\limits_{i=1}^n c_ik_{x_i}(x) .$$
+
+\begin{example} Some loss functions \\
+\textbf{Hings loss}: $\ell(y,f(x)) = \max(0, 1-yf(x))$\\
+\textbf{ $\epsilon$-insensitive loss}: $\ell(y,f(x)) = \min(0, |y-f(x)|-\epsilon)$
+\end{example}
+
+\end{document}
+
+
