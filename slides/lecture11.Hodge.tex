@@ -1,0 +1,2303 @@
+%!TEX encoding = UTF-8 Unicode
+\documentclass[slidestop,compress,epsfig,color]{beamer}
+\usepackage{pstricks}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+%\usepackage{beamerthemesplit}
+\usetheme{Warsaw}
+\mode<presentation>
+\useoutertheme{shadow}
+\useoutertheme{miniframes} %miniframes
+%\useoutertheme[subsection=false]{smoothbars}
+\useinnertheme{rectangles}
+\usepackage{CJKutf8}
+
+%\beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}}
+
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\X}{\mathcal{X}}
+\providecommand{\Y}{\mathcal{Y}}
+\providecommand{\Z}{\mathcal{Z}}
+\providecommand{\E}{\mathbb{E}}
+\providecommand{\H}{\mathcal{H}}
+\providecommand{\D}{\mathcal{D}}
+\providecommand{\U}{\mathcal{U}}
+\providecommand{\De}{\Delta}
+\providecommand{\de}{\delta}
+\providecommand{\hg}{\hat{g}}
+\providecommand{\1}{\mathbf{1}}
+\providecommand{\NN}{\mathcal{N}}
+\providecommand{\X}{\mathcal{X}}
+\providecommand{\Y}{\mathcal{Y}}
+\providecommand{\E}{\mathbb{E}}
+\providecommand{\H}{\mathcal{H}}
+\providecommand{\D}{\mathcal{D}}
+\providecommand{\U}{\mathcal{U}}
+\providecommand{\De}{\Delta}
+\providecommand{\de}{\delta}
+\providecommand{\hg}{\hat{g}}
+\providecommand{\ga}{\gamma}
+\providecommand{\la}{\lambda}
+
+
+\theoremstyle{example}
+\newtheorem{thm}{}
+%\newtheorem{fact}{}
+
+\providecommand{\subitem}{\\ \textcolor{yellow}{$\bullet\ $}}
+\DeclareMathOperator{\sign}{sign}
+%\DeclareMathOperator{\span}{span}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\supp}{supp}
+%\DeclareMathOperator{\ker}{ker}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\grad}{grad}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\dive}{div}
+\DeclareMathOperator{\ASL}{\mathfrak{sl}}
+
+
+
+\title[Applied Hodge Theory]{Applied Hodge Theory}
+\author{Yuan Yao}
+\institute{HKUST}
+\date{April 24, 2017}
+\addtobeamertemplate{title page}{}{}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\frame{
+\frametitle{Topological \& Geometric Data Analysis}
+\begin{itemize}
+\item Differential Geometric methods: \textcolor{blue}{manifolds}
+\subitem data manifold: manifold learning/NDR, etc.
+\subitem model manifold: information geometry (high-order efficiency for parametric statistics), Grassmannian, etc.
+\item Algebraic Geometric methods: \textcolor{blue}{polynomials/varieties}
+\subitem data: tensor, Sum-Of-Square (MDS, polynom. optim.), etc
+\subitem model: algebraic statistics
+\item Algebraic Topological methods: \textcolor{blue}{complexes (graphs, etc.)}
+\subitem persistent homology (robust, slow)
+\subitem Euler calculus (non-stable, fast)
+\subitem \textcolor{red}{Hodge theory} (geometry$\leftrightarrow$topology via optimization or spectral method)
+\end{itemize}
+}
+
+\section[Outline]{}
+\frame{\tableofcontents}
+
+\section[Social Choice]{Preference Aggregation and Hodge Theory}
+
+%\frame{
+%  \frametitle{Fundamental problem of preference aggregation}
+%  \textcolor{red}{How to aggregate preferences which faithfully represent individuals?}
+%  \begin{figure}[!h]
+%	\centering
+%	\includegraphics[width=0.7\textwidth]{figures/voting.jpeg}
+%%	\caption{(Xu-Huang-Y., et al. 11) Crowdsouring subjective Quality of Experience evaluation}
+%	\end{figure}
+%}
+
+\frame{
+  \frametitle{Social Choice Problem}
+  The fundamental problem of preference aggregation:
+  \begin{center}
+  \textcolor{red}{How to aggregate preferences \\ which faithfully represent individuals?}
+  \end{center}
+%\begin{itemize}
+%\item \textcolor{red}{How to aggregate preferences which faithfully represent individuals?}
+%\item Classical social choice theory origins from Voting Theory
+%\subitem \emph{Borda} 1770, B. Count against plurality vote
+%\subitem \emph{Condorcet} 1785, C. Winner who wins all paired elections
+%\subitem Impossibility theorems: \emph{Kenneth Arrow} 1963, \emph{Amartya Sen} 1973
+%\subitem Resolving conflicts: \emph{Kemeny}, \emph{Saari} ...
+%%\item Internet provides us a plethora of new examples
+%%\subitem Recommendation systems (Amazon, netflix, ...)
+%%\subitem Peer review systems (CiteSeer, Google's pagerank, eBay, ...)
+%%\subitem Crowdsourced ranking ({\tt{allourideas}, \tt{crowdrank}}, ...)
+%\item Modern crowdsourcing ranking/voting ...
+%\end{itemize}
+}
+
+\frame{
+	\frametitle{Crowdsourcing QoE evaluation of Multimedia}
+	\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/crowdsourcing2.png}
+	\caption{Crowdsouring subjective Quality of Experience evaluation (Xu-Huang-Y., et al. \emph{ACM-MM} 2011) }
+	\end{figure}
+}
+
+\frame{
+	\frametitle{Crowdsourced ranking}
+	\begin{figure}[!t]
+	\centering
+	\includegraphics[width=0.6\textwidth]{./figures/allourideas_college1.png} \ \ 
+		\includegraphics[width=0.3\textwidth]{./figures/CrowdRank.pdf} 
+		\caption{Left: www.\textcolor{red}{allourideas}.org/worldcollege (Prof. Matt Salganik at Princeton); Right: www.\textcolor{red}{crowdrank}.net.}
+  \end{figure}
+	}
+
+
+%\frame{
+%	\frametitle{Relative attributes in describing objects}
+%	\begin{figure}[!t]
+%	\centering
+%	\includegraphics[width=0.7\textwidth]{./figures/horse-vs-donkey.png}
+%	\caption{(Parikh-Grauman'11) Horse vs. Donkey: furry (donkey $>$ horse), long tails (horse $>$ donkey), running faster (horse $>$ donkey), cute(?)}
+%  \end{figure}
+%	}
+
+\frame{
+	\frametitle{Learning relative attributes: age}
+	\begin{figure}[!t]
+	\centering
+	\includegraphics[width=\textwidth]{./figures/idea_illustration.eps}
+	\caption{Age: a relative attribute estimated from paired comparisons (Fu-Hospedales-Xiang-Gong-Y. \emph{ECCV}, 2014)}
+  \end{figure}
+	}
+	
+	
+%\frame{
+%\frametitle{Thurstone's Crime Scaling in 1928 }
+%
+%  \begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.8\textwidth]{figures/thurstone.png}
+%\caption{Can we learn a scale for crimes (wine taste) from paired comparison}
+%  \end{figure}
+%}
+
+%\subsection{Crowdsourcing Ranking on Internet}
+%\frame{
+%\frametitle{Crowdsourcing Ranking on Internet}
+%
+%  \begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.8\textwidth]{figures/crowdsourcing_facemash.png}
+%\caption{Start from a movie -- \emph{The Social Network}}
+%  \end{figure}
+%}
+
+\frame{
+  \frametitle{Netflix Customer-Product Rating}
+
+  \begin{example}[Netflix Customer-Product Rating]
+  \begin{itemize}
+  \item $480189$-by-$17770$ customer-product 5-star rating matrix $X$ with $X_{ij}=\{1,\ldots,5\}$
+  \item $X$ contains $98.82\%$ missing values
+  \end{itemize}
+  \end{example}
+
+ However,
+
+\begin{itemize}
+\item pairwise comparison graph $G=(V,E)$ is very \textcolor{red}{dense}!
+
+\item only $0.22\%$ edges are missed, \textcolor{red}{almost a complete graph}
+
+\item rank aggregation may be carried out without estimating missing values
+
+\item \textcolor{red}{imbalanced}: number of raters on $e\in E$ varies
+\end{itemize}
+}
+
+\frame{
+  \frametitle{Drug Sensitivity Ranking}
+
+  \begin{example}[Drug Sensitivity Data]
+  \begin{itemize}
+  \item $300$ drugs 
+  \item $940$ cell lines, with $\approx 1000$ genetic features 
+  \item sensitivity measurements in terms of IC50 and AUC
+  \item heterogeneous missing values
+  \end{itemize}
+  \end{example}
+
+ However,
+\begin{itemize}
+\item every two drug $d_1$ and $d_2$ has been tested at least in one cell line, hence comparable (which is more sensitive)
+\item \textcolor{red}{complete graph} of paired comparisons: $G=(V,E)$
+\item \textcolor{red}{imbalanced}: number of raters on $e\in E$ varies
+\end{itemize}
+}
+
+\frame{
+	\frametitle{Paired comparison data on graphs}
+	Graph $G=(V,E)$
+	\begin{itemize}
+	\item $V$: alternatives to be ranked or rated
+	\item $(i_\alpha,j_\alpha) \in E$ a pair of alternatives
+	\item $y^\alpha_{ij}\in \R$ degree of preference by rater $\alpha$
+	\item $\omega^\alpha_{ij}\in \R_+$ confidence weight of rater $\alpha$
+	\item Examples: relative attributes, subjective QoE assessment, perception of illuminance intensity, sports, wine taste, etc.
+	\end{itemize}
+	\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.3\textwidth]{figures/pagerank.png} \ \
+	\includegraphics[width=0.3\textwidth]{figures/pairwise_rank_graph.png}
+%	\caption{Crowdsouring subjective image quality evaluation}
+	\end{figure}
+}
+
+\frame{
+\frametitle{Modern settings}
+Modern ranking data are
+\begin{itemize}
+\item \textcolor{red}{distributive} on networks
+\item \textcolor{red}{incomplete} with missing values
+\item \textcolor{red}{imbalanced}
+\item even adaptive to \textcolor{red}{dynamic} and \textcolor{red}{random} settings?
+\end{itemize}
+
+Here we introduce:
+
+\begin{center}
+\textcolor{blue}{Hodge Theory approach to Social Choice or Preference Aggregation}
+\end{center}
+}
+
+\subsection{Social Choice and Impossibility Theorems}
+
+\frame{
+\frametitle{History}
+
+ Classical social choice theory origins from Voting Theory
+\begin{itemize}
+%\item \textcolor{red}{How to aggregate preferences which faithfully represent individuals?}
+\item \emph{Borda} 1770, B. Count against plurality vote
+\item \emph{Condorcet} 1785, C. Winner who wins all paired elections
+\item Impossibility theorems: \emph{Kenneth Arrow} 1963, \emph{Amartya Sen} 1973
+\item Resolving conflicts: \emph{Kemeny}, \emph{Saari} ...
+%\item Internet provides us a plethora of new examples
+%\subitem Recommendation systems (Amazon, netflix, ...)
+%\subitem Peer review systems (CiteSeer, Google's pagerank, eBay, ...)
+%\subitem Crowdsourced ranking ({\tt{allourideas}, \tt{crowdrank}}, ...)
+\item In these settings, we study \textcolor{red}{complete ranking orders} from voters.
+\end{itemize}
+}
+
+\frame{
+\frametitle{Classical Social Choice or Voting Theory}
+  \begin{problem}
+  Given $m$ voters whose preferences are \textcolor{red}{total orders (permutation)} $\{\succeq_i: i=1,\dots,m\}$ on a candidate set $V$,
+  find a social choice mapping
+\[f: (\succeq_1,\dots, \succeq_m) \mapsto \succeq^\ast, \]
+as a total order on $V$, which ``best" represents voter's will.
+\end{problem}
+%\textcolor{red}{Arrow's impossibility theorem} says No to its existence ...
+}
+
+\frame{
+\frametitle{Example: 3 candidates ABC}
+ 
+% \begin{columns} 
+%\begin{column}{0.6\textwidth} 
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{@{} cc @{}}
+    \hline\hline
+    Preference order & Votes \\ 
+    \hline
+    $A\succeq B \succeq C$ & 2 \\ 
+    $B \succeq A  \succeq C$ & 3 \\ 
+    $B\succeq C\succeq A$ & 1 \\ 
+    $C\succeq B\succeq A$ & 3 \\ 
+    $C\succeq A\succeq B$ & 2 \\ 
+    $A\succeq C\succeq B$ & 2 \\ 
+    \hline
+  \end{tabular}
+%  \caption{TableCaption}
+  \label{tab:label}
+\end{table}
+%\end{column} 
+%\begin{column}{0.4\textwidth} 
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=\textwidth]{./figures/saari_triangle0.png} 
+%%\caption{Courtesy by Asu Ozdaglar}
+%  \end{figure} 
+%\end{column} 
+%\end{columns} 
+}
+
+
+\frame{
+\frametitle{What we did in practice I: Position rules}
+There are two important classes of social mapping in realities:
+\begin{itemize}
+\item \textcolor{blue}{I. Position rules}: assign a \textcolor{red}{score} $s:V\to \R$, such that for each voter's order(permutation) $\sigma_i \in S_n$ ($i=1,\ldots,m$), $s_{\sigma_i(k)}\geq s_{\sigma_i(k+1)}$. Define the social order by the descending order of \textcolor{blue}{total score} over raters, i.e. the score for $k$-th candidate
+$$f(k)=\sum_{i=1}^m s_{\sigma_i}(k).$$
+\subitem \textcolor{red}{Borda Count}: $s:V\to\R$ is given by $(n-1,n-2,\ldots,1,0)$
+\subitem \textcolor{red}{Vote-for-top-1}: $(1,0,\ldots,0)$
+\subitem \textcolor{red}{Vote-for-top-2}: $(1, 1, 0,\ldots,0)$
+\end{itemize}
+}
+
+%\frame{
+%\frametitle{Modern Examples: Mean Opinion Score}
+%
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.6\textwidth]{figures/MOS_table.png}
+%%\caption{Start from a movie -- \emph{The Social Network}}
+%  \end{figure}
+% widely used for evaluation of videos, as well books and movies, etc., but
+%  \medskip
+%  \begin{itemize}
+%  \item Ambiguity in definition of the \textcolor{red}{scale};
+%  \item Difficult to verify whether a participant gives \textcolor{red}{false ratings}
+%either intentionally or carelessly.
+%  \end{itemize}
+%}
+
+\frame{
+\frametitle{What we did in practice II: pairwise rules}
+\begin{itemize}
+\item \textcolor{blue}{II. Pairwise rules}: convert the voting profile, a (distribution) function on $n!$ set $S_n$, into \textcolor{red}{paired comparison matrix} $X\in \R^{n\times n}$ where $X(i,j)$ is the number (distribution) of voters that $i\succ j$; define the social order based on paired comparison data $X$.
+\subitem \textcolor{red}{Kemeny Optimization}: minimizes the number of pairwise mismatches to $X$ over $S_n$ (\textcolor{red}{NP}-hard)
+\subitem \textcolor{red}{Pluarity}: the number of wins in paired comparisons (tournaments) -- equivalent to Borda count in complete Round-Robin tournaments
+\end{itemize}
+}
+
+\frame{
+\frametitle{Revisit the ABC-Example}
+
+ \begin{columns}
+\begin{column}{0.6\textwidth}
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{@{} cc @{}}
+    \hline\hline
+    Preference order & Votes \\
+    \hline
+    $A\succeq B \succeq C$ & 2 \\
+    $B \succeq A  \succeq C$ & 3 \\
+    $B\succeq C\succeq A$ & 1 \\
+    $C\succeq B\succeq A$ & 3 \\
+    $C\succeq A\succeq B$ & 2 \\
+    $A\succeq C\succeq B$ & 2 \\
+    \hline
+  \end{tabular}
+%  \caption{TableCaption}
+  \label{tab:label}
+\end{table}
+\end{column}
+\begin{column}{0.4\textwidth}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\textwidth]{./figures/saari_triangle0.png}
+%\caption{Courtesy by Asu Ozdaglar}
+  \end{figure}
+\end{column}
+\end{columns}
+}
+
+
+
+\frame{
+\frametitle{Voting chaos!}
+ \begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+\item Position:
+\subitem $s<1/2$, $C$ wins
+\subitem $s=1/2$, ties
+\subitem $s>1/2$, $A/B$ wins
+\item Pairwise:
+\subitem $A$, $B$: 13 wins
+\subitem $C$: 14 wins
+\subitem Kemeny winners $A/B$
+\end{itemize}
+so completely in chaos!
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\textwidth]{./figures/saari_triangle0.png}
+%\caption{Courtesy by Asu Ozdaglar}
+  \end{figure}
+\end{column}
+\end{columns}
+}
+
+\frame{
+	\frametitle{Arrow's Impossibility Theorem}
+	\begin{thm}[Arrow'1963] Consider the Unrestricted Domain, i.e. voters may have all complete and transitive preferences.
+	The only social choice rule satisfying the following conditions is the \textcolor{red}{dictator} rule
+	\begin{itemize}
+	\item \textcolor{red}{Pareto (Unanimity)}: if all voters agree that $A\succeq B$ then such a preference should appear in the social order
+	\item \textcolor{red}{Independence of Irrelevant Alternative (IIA)}: the social order of any pair only depends on voter's relative rankings of that pair
+	\end{itemize}
+	\end{thm}
+	}
+
+\frame{
+	\frametitle{Sen's Impossibility Theorem}
+	\begin{thm}[Sen'1970] With Unrestricted Domain, there are cases with voting data that no social choice mapping,
+	\[  f: (\succeq_1,\dots, \succeq_m) \mapsto 2^{V}, \]
+	exists under the following conditions
+	\begin{itemize}
+	\item \textcolor{red}{Pareto}: if all voters agree that $A>B$ then such a preference should appear in the social order
+	\item \textcolor{red}{Minimal Liberalism}: two distinct voters decide social orders of two distinct pairs respectively
+	\end{itemize}
+	\end{thm}
+	}
+
+
+%\frame{
+%\frametitle{Paired Comparisons vs. MOS}
+%\begin{itemize}
+%\item CiteSeer, PageRank, Amazon recommendation
+%\item Individual decision process in paired comparison is simpler than in the typical MOS test, as the five-scale rating is reduced to a \textcolor{blue}{dichotomous} choice;
+%\item But the paired comparison methodology leaves a \textcolor{red}{heavier
+%burden} on participants with a larger number $n \choose 2$ of comparisons, compared with a linear score
+%\end{itemize}
+%}
+%
+
+\subsection[Saari Decomposition]{A Possible: Saari Decomposition and Borda Count}
+
+\frame{
+\frametitle{A Possibility: Saari's Profile Decomposition}
+Every voting profile, as distributions on symmetric group $S_n$, can be decomposed into the following components:
+\begin{itemize}
+\item \textcolor{red}{Universal kernel}: all ranking methods induce a complete tie on any subset of $V$
+\subitem dimension: $n!-2^{n-1} (n-2)-2$
+\item \textcolor{red}{Borda} profile: all ranking methods give the same result
+\subitem dimension: $n-1$
+\subitem basis: $\{ 1(\sigma(1)=i,*) -1(*,\sigma(n)=i): i=1,\ldots,n\}$
+\item \textcolor{red}{Condorcet} profile: all positional rules give the same result
+\subitem dimension: $\frac{(n-1)!}{2}$
+\subitem basis: sum of $Z_n$ orbit of $\sigma$ minus their reversals
+\item \textcolor{red}{Departure} profile: all pairwise rules give the same result
+\end{itemize} 
+}
+
+\frame{
+\frametitle{Example: Decomposition of Voting Profile $R^{3!}$}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\textwidth]{figures/saari_decomp3.png}
+%\caption{Courtesy by Asu Ozdaglar}
+  \end{figure}
+}
+
+\frame{
+\frametitle{Borda Count: the most consistent rule?}
+\begin{table}[]
+\caption{Invariant subspaces of social rules (-)}
+\begin{center}
+\begin{tabular}{c|c|c|c}
+&Borda Profile & Condorcet & Departure\\
+\hline
+{\textbf{Borda Count}} & consistent & - & -  \\
+Pairwise & consistent &  inconsistent & - \\
+Position (non-Borda) & consistent & - & inconsistent
+\end{tabular}
+\end{center}
+\label{invariant}
+\end{table}%
+\begin{itemize}
+\item So, if you look for a best \textcolor{red}{possibility} from \textcolor{blue}{impossibility}, Borda count is perhaps the choice
+\item Borda Count is the \textcolor{red}{projection} onto the Borda Profile subspace
+\end{itemize}
+}
+
+
+
+%\frame{
+%\frametitle{Borda Count: the most faithful representation?}
+%Borda count is the most consistent ranking method, since
+%\begin{itemize}
+%\item for \textcolor{blue}{full set} ranking, it only depends on \textcolor{red}{Borda} profile
+%\item for \textcolor{blue}{subset} ranking it depends on both \textcolor{red}{Borda} and \textcolor{red}{Condorcet} profiles
+%\end{itemize}
+%while
+%\begin{itemize}
+%\item \textcolor{blue}{Pairwise} rules depend on both \textcolor{red}{Borda} and \textcolor{red}{Condorcet} profiles
+%\item \textcolor{blue}{Position} rules depend on both \textcolor{red}{Borda} and \textcolor{red}{Departure} profiles (except Borda)
+%\end{itemize}
+%So, if you look for best \textcolor{red}{possibility} from \textcolor{blue}{impossibility}, perhaps Borda count is the choice.
+%}
+
+
+\frame{
+ \frametitle{Equivalently, Borda Count is a Least Square}
+Borda Count is equivalent to 
+\[
+\min_{\beta \in {\mathrm R}^{|V|}}  \sum_{\alpha, \{i,j\}\in E}\omega_{ij}^\alpha (\beta_i - \beta_j -
+Y^\alpha_{ij})^2,
+\]
+where 
+ \begin{itemize}
+ \item E.g. $Y_{ij}^\alpha=1$, if $i\succeq j$ by voter $\alpha$, and $Y_{ij}^\alpha=-1$, on the opposite.
+ \item Note: \textcolor{red}{NP-hard} ($n>3$) \textcolor{blue}{Kemeny Optimization, or Minimimum-Feedback-Arc-Set}:
+ \[ \min_{s\in {\mathrm R}^{|V|}}  \sum_{\alpha,\{i,j\}\in E}  \omega_{ij}^\alpha (\textcolor{red}{\sign}(\beta_i - \beta_j) -
+\hat{Y}^\alpha_{ij})^2\]
+ \end{itemize} 
+}
+
+\subsection[HodgeRank]{HodgeRank: generalized Borda Count}
+\frame{
+	\frametitle{Generalized Borda Count with Incomplete Data}
+ \[ \min_{x\in {\mathrm R}^{|V|}}  \sum_{\alpha, \{i,j\}\in E} \omega_{ij}^\alpha (x_i - x_j -y^\alpha_{ij})^2, \]
+ \[ \Leftrightarrow \]
+ \[ \textcolor{blue}{\min_{x\in {\mathrm R}^{|V|}} \sum_{\{i,j\}\in E}  \omega_{ij}((x_i - x_j) -\hat{y}_{ij})^2}, \]
+ \[\mbox{where } \hat{y}_{ij}=\hat{\E}_\alpha y^\alpha_{ij}=( \sum_\alpha \omega_{ij}^\alpha y^\alpha_{ij}) /\omega_{ij} = -\hat{y}_{ji}, \ \ \ \omega_{ij}=\sum_\alpha \omega_{ij}^\alpha\]
+ So $\hat{y}\in \textcolor{blue}{l^2_\omega(E)}$, inner product space with $\langle u,v\rangle_\omega = \sum u_{ij} v_{ij} \omega_{ij}$, $u,v$ skew-symmetric
+	}
+	
+\frame{
+ \frametitle{Statistical Majority Voting: $l^2(E)$}
+ \begin{itemize}
+% \item Majority voting (Condorcet'1785): inconsistency arises (\textcolor{red}{Arrow's impossibility theorem} 1950s)
+% \item Statistical majority voting:
+ \item $\hat{y}_{ij}=( \sum_\alpha \omega_{ij}^\alpha y^\alpha_{ij}) / (\sum_\alpha \omega_{ij}^\alpha )=-\hat{y}_{ji}$, $\omega_{ij} = \sum_\alpha \omega^\alpha_{ij}$
+ \item $\hat{y}$ from generalized linear models:
+\subitem[1] \emph{Uniform} model: $\hat{y}_{ij}=2\hat{\pi}_{ij}-1.$
+\subitem[2] \emph{Bradley-Terry} model: $\hat{y}_{ij}={\mathrm{log}}\frac{\hat{\pi}_{ij} } {1-\hat{\pi}_{ij}}. $
+\subitem[3] \emph{Thurstone-Mosteller} model: $\hat{y}_{ij}=\Phi^{-1}(\hat{\pi}_{ij}),$ $\Phi(x)$ is Gaussian CDF
+%\[
+%\Phi(x)= \frac{1}{\sqrt{2\pi}} \int_{-x/[2\sigma^2 (1-\rho)]^{1/2}}^\infty e^{-\frac{1}{2} t^2 } d t .
+%\]
+\subitem[4] \emph{Angular transform} model: $\hat{y}_{ij}=\arcsin(2\hat{\pi}_{ij}-1)$.
+ \end{itemize}
+}
+
+\section[Hodge Theory]{Hodge Decomposition of Pairwise Ranking}
+\subsection{Hodge Decomposition}
+\frame{
+\frametitle{Hodge Decomposition of Pairwise Ranking}
+% \begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.4\textwidth]{figures/HodgeRank.png}
+%%\caption{Start from a movie -- \emph{The Social Network}}
+%  \end{figure}
+\begin{thm}
+$\hat{y}_{ij}=-\hat{y}_{ji}\in l^2_\omega(E)$ admits an \textcolor{red}{orthogonal} decomposition,
+ \begin{equation}
+\textcolor{red}{\hat{y} = A x + B^T z + w},
+\end{equation}
+where
+\begin{subequations}
+\begin{align}
+(A x)(i,j) := x_i - x_j, & \ \ \textrm{gradient, as \textcolor{blue}{Borda} profile}, \\
+(B \hat{y})(i,j,k):=\hat{y}_{ij} + \hat{y}_{jk} + \hat{y}_{ki}, & \ \ \textrm{trianglar cycle/curl, \textcolor{blue}{Condorcet}}\\
+w\in \ker(A^T) \cap \ker(B), & \ \ \textrm{harmonic, \textcolor{blue}{Condorcet}} .
+\end{align}
+\end{subequations}
+In other words
+\[ \textcolor{red}{\im(A) \oplus \ker(A A^T+B^T B) \oplus \im(B^T) }\]
+\end{thm}
+}
+
+\frame{
+	\frametitle{Why? Hodge Decomposition in Linear Algebra}%
+	For inner product spaces $\X$, $\Y$, and $\Z$, consider	
+	\[
+	\X \xrightarrow{A} \Y \xrightarrow{B} \Z.
+	\]
+	and $\Delta =A A^\ast + B^\ast B: \Y\to \Y$ where $(\cdot )^\ast$ is adjoint operator of $(\cdot)$.
+	
+	If 
+	\[ \textcolor{red}{B \circ A = 0},\]
+	then $\ker(\Delta) = \ker(A^\ast) \cap \ker(B)$ and \emph{orthogonal} decomposition   
+	\[ \Y = \textcolor{green}{\im (A)} + \textcolor{brown}{\ker(\Delta)} + \textcolor{blue}{\im (B^\ast)} \]
+	Note: $\textcolor{blue}{\ker(B)/\im(A)}\simeq \ker(\Delta)$ is the (real) (co)-homology group ($\R\to$ rings; vector spaces$\rightarrow$module).
+%	Note: let $V=\X \oplus \Y\oplus \Z$ and $D=diag(A,B,0)$. 
+	}
+	
+\frame{
+	\frametitle{Hodge Decomposition=Rank-Nullity Theorem}%
+	Take product space $V=\X\times\Y\times\Z$, define	
+	\[
+	D = \left( 
+	\begin{array}{ccc}
+	0 & 0 & 0 \\
+	A & 0 & 0 \\
+	0 & B & 0
+	\end{array}
+	\right), \ \ \ BA = 0,
+	\]
+	\textcolor{red}{Rank-nullity Theorem}: $\im(D) + \ker(D^\ast) = V$, in particular
+	\begin{eqnarray*}
+	\Y & = & \im(A) + \ker(A^\ast) \\
+	& = & \im(A) + \ker(A^\ast)/\im(B^\ast) + \im(B^\ast), \mbox{since $\im(A)\subseteq\ker(B)$} \\
+	& = & \im(A) + \ker(A^\ast)\cap \ker(B) + \im(B^\ast) 
+	\end{eqnarray*}
+	\textcolor{red}{Laplacian} 
+	$$L=(D+D^\ast)^2=\diag(A^\ast A, AA^\ast+B^\ast B, BB^\ast)=\diag(L_0,L_1,L_2^{(down)})$$
+	}
+
+
+\frame{
+\frametitle{Hence, in our case}
+% \begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.4\textwidth]{figures/HodgeRank.png}
+%%\caption{Start from a movie -- \emph{The Social Network}}
+%  \end{figure}
+Note \textcolor{red}{$B\circ A =0$} since
+\[ (B\circ A x)(i,j,k) = (x_i - x_j) + (x_j - x_k) + (x_k - x_i ) =0. \]
+Hence
+\[ A^T \hat{y} = A^T (A x + B^T z + w) =  A^TA x \Rightarrow x =(A^TA)^\dagger A^T \hat{y} \]
+\[ B\hat{y} =B (A x + B^T z + w) = B B^T z \Rightarrow z=(B B^T)^\dagger B \hat{y} \]
+\[ A^T w = B w =0 \Rightarrow w\in \ker (\Delta_1), \ \ \Delta_1=A A^T + B^T B. \]
+}
+
+%\frame{
+%\frametitle{In other words [Jiang-Lim-Y.-Ye'11]}
+%% \begin{figure}[!h]
+%%\centering
+%%\includegraphics[width=0.4\textwidth]{figures/HodgeRank.png}
+%%%\caption{Start from a movie -- \emph{The Social Network}}
+%%  \end{figure}
+%\begin{thm}
+%$\hat{y}_{ij}=-\hat{y}_{ji}\in l^2_\omega(E)$ admits an \textcolor{red}{orthogonal} decomposition,
+% \begin{equation}
+%\textcolor{red}{\hat{y} = \hat{y}^{(g)} + \hat{y}^{(h)} + \hat{y}^{(c)}},
+%\end{equation}
+%where
+%\begin{subequations}
+%\begin{align}
+%\hat{y}^{(g)}_{ij}  = x_i - x_j, & \ \ \textrm{for some}\ x\in {\mathrm R}^{V} , \\
+%\hat{y}^{(h)}_{ij} + \hat{y}^{(h)}_{jk} + \hat{y}^{(h)}_{ki} = 0, & \ \ \textrm{for each $\{i,j,k\}\in T$} , \label{eq:curl-free} \\
+%\sum_{j\sim i} \omega_{ij}\hat{y}^{(h)}_{ij} = 0, & \ \ \textrm{for each $i\in V$} \label{eq:divergence-free}.
+%\end{align}
+%\end{subequations}
+%\end{thm}
+%}
+%
+\frame{
+\frametitle{Generalized Borda Count estimator}
+ Gradient flow $\hat{y}^{(g)}:=(A x)(i,j) = x_i - x_j$ gives the generalized Borda count score, $x$ which solves \textcolor{red}{Graph Laplacian equation}
+ \begin{equation*}
+\min_{x \in {\R}^{|V|}} \sum_{\alpha, (i,j)\in E}\omega_{ij}^\alpha (x_i - x_j - y_{ij}^\alpha)^2 \Leftrightarrow \Delta_0 x = A^T \hat{y}
+\end{equation*}
+where $\Delta_0= A^T A$ is the unnormalized graph Laplacian of $G$.
+\begin{itemize}
+\item In theory, \textcolor{red}{nearly linear algorithms} for such equations, e.g. \textcolor{blue}{Spielman-Teng'04, Koutis-Miller-Peng'12}, etc.
+\item But in practice? ...
+\end{itemize}
+%But no one has implemented such algorithms yet!
+%Residues $\hat{Y}^{(h)}$ and $\hat{Y}^{(c)}$ accounts for \textcolor{red}{inconsistencies}:
+% \begin{itemize}
+%\item $\hat{Y}^{(c)}$, the \textcolor{red}{local} inconsistency, triangular curls
+%\subitem $\hat{Y}^{(c)}_{ij} + \hat{Y}^{(c)}_{jk} + \hat{Y}^{(c)}_{ki} \neq 0 $ , $\{i,j,k\}\in T$
+%\item $\hat{Y}^{(h)}$, the \textcolor{red}{global} inconsistency, harmonic ranking
+%\subitem harmonic ranking leads to \emph{circular coordinates} on $V$ $\Rightarrow$ \emph{fixed tournament} issue
+%\subitem it creates all \emph{chaotic} voting results
+%\end{itemize}
+}
+
+\frame{
+\frametitle{Online HodgeRank [Xu-Huang-Yao'2012]}
+\textcolor{blue}{Robbins-Monro} (1951) algorithm for $\Delta_0 x = \bar{b}:=\delta_0^* \hat{y}$,
+\[ x_{t+1} = x_t - \gamma_t (A_t x_t - b_t), \ \ \ x_0=0,\ \E(A_t) =\Delta_0, \ \E(b_t) =\bar{b} \]
+Note: 
+\begin{itemize}
+\item For each $Y_t(i_{t+1},j_{t+1})$, updates only occur locally
+\item Step size: $\gamma_t = a (t+b)^{-1/2}$ (e.g. a=$1/\lambda_1(\Delta_0)$ and $b$ large)
+\item Optimal convergence of $x_t$ to $x^\ast$ (population solution) in $t$ 
+\[ \E \|x_t - x^\ast\|^2\leq O\left(\textcolor{red}{t^{-1} \cdot \lambda_2^{-2}(\Delta_0) } \right) \]
+where $\lambda_2(\Delta_0)$ is the Fiedler Value of graph Laplacian
+\item Tong Zhang's SVRG: $\E \|s_t - s^\ast\|^2\leq O\left(\textcolor{red}{t^{-1} + \lambda_2^{-2}(\Delta_0) t^{-2}}\right)$
+\end{itemize}
+}
+
+
+%\frame{
+%\frametitle{Online HodgeRank as Stochastic Approximations}
+%\textcolor{blue}{Robbins-Monro} (1951) algorithm for $\bar{A}x=\bar{b}$
+%\[ x_{t+1} = x_t - \gamma_t (A_t x_t - b_t), \ \ \ \E(A_t) =\bar{A}, \ \E(b_t) =b \]
+%Now consider $\Delta_0 x =  \delta_0^\ast \hat{y}$, with new rating $y_t(i_{t+1},j_{t+1})$
+%\begin{eqnarray*}
+%x_{t+1}(i_{t+1}) & = & x_{t}(i_{t+1}) - \gamma_t [x_t(i_{t+1}) - x_t(j_{t+1}) - y_t(i_{t+1},j_{t+1})] \\
+%x_{t+1}(j_{t+1}) & = & x_{t}(j_{t+1}) + \gamma_t [x_t(i_{t+1}) - x_t(j_{t+1}) - y_t(i_{t+1},j_{t+1})]
+%\end{eqnarray*}
+%Note:
+%\begin{itemize}
+%\item updates only occur locally on edge $\{i_{t+1},j_{t+1}\}$
+%\item initial choice: $s_{0}=0$ or any vector $\sum_i x_0 (i)=0$
+%\item step size
+%\subitem $\gamma_t = a (t+b)^{-\theta}$ ($\theta\in (0,1]$)
+%\subitem $\gamma_t = const(T)$, .e.g. $1/T$ where $T$ is total sample size
+%\end{itemize}
+%}
+%
+%\frame{
+%\frametitle{Minimax Optimal Convergence Rates}
+%\begin{itemize}
+%\item Choose $\gamma_t\sim t^{-1/2}$ (e.g. a=$1/\lambda_1(\Delta_0)$ and $b$ large enough)
+%\item In this case, $s_t$ converges to $s^\ast$ (population solution) in the (optimal) rate of $t$
+%\[ \E \|x_t - x^\ast\|^2\leq O\left(\textcolor{red}{t^{-1} \cdot \lambda_2^{-2}(\Delta_0) } \right) \]
+%where $\lambda_2(\Delta_0)$ is the Fiedler Value of graph Laplacian
+%\item Using Tong Zhang's stochastic variance reduction gradient (SVRG)
+%\[ \E \|x_t - x^\ast\|^2\leq O\left(\textcolor{red}{t^{-1} + \lambda_2^{-2}(\Delta_0) t^{-2}}\right) \]
+%%\item Dependence on $\lambda_1^{-3/2}$ can be improved to $\lambda_1^{-1}$ by Ji Liu (U Wisc-Madison) (\textcolor{red}{optimal order of $\kappa$?})
+%\end{itemize}
+%%\begin{figure}[!h]
+%%\centering
+%%\includegraphics[width=0.4\textwidth]{figures/onlinerates.png}
+%%%\caption{Start from a movie -- \emph{The Social Network}}
+%%  \end{figure}
+%%
+%}
+%
+
+\frame{
+\frametitle{Condorcet Profile splits into Local vs. Global Cycles}
+%Residues $\hat{Y}^{(2)}$ and $\hat{Y}^{(3)}$ accounts for \textcolor{red}{inconsistencies}, locally or globally, to characterize \textcolor{blue}{reliability or intrinsic conflicts of data}
+% \begin{itemize}
+%\item $\hat{Y}^{(3)}$, the \textcolor{red}{local} inconsistency, triangular curls
+%\subitem $\hat{Y}^{(3)}_{ij} + \hat{Y}^{(3)}_{jk} + \hat{Y}^{(3)}_{ki} \neq 0 $ , $\{i,j,k\}\in T$
+%\item $\hat{Y}^{(2)}$, the \textcolor{red}{global} inconsistency, harmonic ranking
+%\subitem $\hat{Y}^{(2)}$ vanishes if \textcolor{red}{1-homology} of $\chi_G$ vanishes
+%\subitem harmonic ranking is a \textcolor{red}{circular coordinate} and generally non-sparse $\Rightarrow$ \textcolor{red}{fixed tournament} issue
+%\end{itemize}
+Residues $\hat{y}^{(c)}=B^T z$ and $\hat{y}^{(h)}=w$ are cyclic rankings, accounting for conflicts of interests:
+ \begin{itemize}
+\item $\hat{y}^{(c)}$, the \textcolor{red}{local/triangular} inconsistency, triangular curls  (\textcolor{blue}{$Z_3$-invariant})
+\subitem $\hat{y}^{(c)}_{ij} + \hat{y}^{(c)}_{jk} + \hat{y}^{(c)}_{ki} \neq 0 $ , $\{i,j,k\}\in T$
+%\item $\hat{y}^{(h)}$, the \textcolor{red}{global} inconsistency, harmonic ranking (\textcolor{blue}{$Z_n$-invariant})
+%\begin{subequations}
+%\begin{align}
+%\hat{y}^{(h)}_{ij} + \hat{y}^{(h)}_{jk} + \hat{y}^{(h)}_{ki} = 0, & \ \ \textrm{for each $\{i,j,k\}\in T$} , \label{eq:curl-free} \\
+%\sum_{j\sim i} \omega_{ij}\hat{y}^{(h)}_{ij} = 0, & \ \ \textrm{for each $i\in V$} \label{eq:divergence-free}.
+%\end{align}
+%\end{subequations}
+%\subitem \textcolor{red}{voting chaos}: \emph{circular coordinates} on $V$ $\Rightarrow$ \emph{fixed tournament} issue
+%%\subitem it creates all \emph{chaotic} voting results
+\end{itemize}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/Tennis-cycle.pdf}
+%\includegraphics[width=0.3\textwidth]{figures/Harmonic-cycle.pdf}
+%\caption{Courtesy by Asu Ozdaglar}
+ \end{figure}
+}
+
+\frame{
+\frametitle{Condorcet Profile in Harmonic Ranking}
+\begin{itemize}
+\item $\hat{y}^{(h)}=w$, the \textcolor{red}{global} inconsistency, harmonic ranking (\textcolor{blue}{$Z_n$-invariant})
+\begin{subequations}
+\begin{align}
+\hat{y}^{(h)}_{ij} + \hat{y}^{(h)}_{jk} + \hat{y}^{(h)}_{ki} = 0, & \ \ \textrm{for each $\{i,j,k\}\in T$} , \label{eq:curl-free} \\
+\sum_{j\sim i} \omega_{ij}\hat{y}^{(h)}_{ij} = 0, & \ \ \textrm{for each $i\in V$} \label{eq:divergence-free}.
+\end{align}
+\end{subequations}
+\subitem \textcolor{red}{voting chaos}: \emph{circular coordinates} on $V$ $\Rightarrow$ \emph{fixed tournament} issue
+%\subitem it creates all \emph{chaotic} voting results
+\end{itemize}
+\begin{figure}[!h]
+\centering
+%\includegraphics[width=0.45\textwidth]{figures/Tennis-cycle.pdf}
+\includegraphics[width=0.3\textwidth]{figures/Harmonic-cycle.pdf}
+%\caption{Courtesy by Asu Ozdaglar}
+ \end{figure}
+}
+
+\subsection{Robust Ranking}
+\frame{
+	\frametitle{Cyclic Ranking and Outliers: High Dimensional Statistics}
+	\begin{itemize}
+	\item Outliers are \textcolor{red}{sparse approximation of cyclic rankings} (curl+harmonic) [Xu-Xiong-Huang-Y.'13]
+	\[ \min_\gamma \| \Pi_{\ker(A^*)} ( \hat{y} - \gamma )\|^2 + \lambda \|\gamma\|_1 \]
+	\item Robust ranking can be formulated as a \textcolor{red}{Huber's LASSO}
+	\[ \min_{x,\gamma} \| \hat{y} - A x - \gamma\|^2 + \lambda \|\gamma\|_1 \]
+	\subitem outlier $\gamma$ is incidental parameter (Neyman-Scott'1948)
+	\subitem global rating $x$ is structural parameter
+	\item Yet, LASSO is a \textcolor{blue}{biased} estimator (Fan-Li'2001)
+%	\item Exact recovery is possible without Gaussian noise
+%	\item Outlier detection is possible against Gaussian noise, provided
+%	\subitem Irrepresentable condition (e.g. random graph)
+%	\subitem Outliers have large enough magnitudes
+	\end{itemize}	
+	}
+
+\frame{
+	\frametitle{A Dynamic Approach to Sparse Recovery}
+	\begin{itemize}
+	\item  A Dual Gradient Descent (Boosting) dynamics [Osher-Ruan-Xiong-Y.-Yin'2014]
+\begin{subequations}\label{eq:bregman-iss}
+\begin{align}
+ \dot\rho_t&=\frac{1}{n} X^T(y-X\beta_t),\label{eq:bregman-issa}\\
+ \rho_t &\in \partial\|\beta_t\|_1. \label{eq:bregman-issb}
+\end{align}
+\end{subequations}
+	\item called Inverse Scale Space dynamics in imaging
+	\item sign consistency under nearly the same conditions as LASSO (Wainwright'99), yet returns \textcolor{red}{unbiased} estimator
+	\item fast and scalable discretization as linearized Bregman Iteration 
+	\end{itemize}	
+	}
+
+
+\subsection{From Social to Personal}
+\frame{
+	\frametitle{Conflicts are due to personalization}
+	\[ cycles = personalized\ ranking + position\ bias + noise. \]
+Linear mixed-effects model for annotator's pairwise ranking:
+\begin{equation} \label{eq:linear}
+y_{ij}^u = (\theta_i+\delta_i^u) - (\theta_j+\delta_j^u) + \gamma^u + \varepsilon_{ij}^u,
+\end{equation}
+where
+\begin{itemize}
+\item $\theta_i$ is the common global ranking score, as a fixed effect;
+\item $\delta_i^u$ is the annotator's preference deviation from the common ranking $\theta_i$ such that $\theta_i^u:=\theta_i + \delta_i^u$ becomes annotator $u$'s personalized ranking score, as a random effect;
+\item $\gamma^u$ is an annotator's position bias, which captures the careless behavior by clicking one side during the comparisons;
+\item $\varepsilon_{ij}^u$ is the random noise which is assumed to be independent and identically distributed with zero mean and being bounded.
+\end{itemize}
+}
+
+
+
+\frame{
+\frametitle{Topological Obstructions}
+Two \textcolor{red}{topological} conditions are important:
+\begin{itemize}
+\item \textcolor{red}{Connectivity}:
+\subitem $G$ is connected $\Rightarrow$ unique global ranking is possible;
+\item \textcolor{red}{Loop-free}:
+\subitem for cyclic rankings, consider clique complex $\chi^2_G=(V,E,T)$ by attaching triangles $T=\{(i,j,k)\}$
+\subitem $\dim(\ker(\Delta_1)) = \beta_1(\chi^2_G)$, so harmonic ranking $w=0$ if $\chi^2_G$ is loop-free,
+here topology plays a role of \textcolor{red}{obstruction of fixed-tournament}
+\subitem ``\textcolor{blue}{Triangular arbitrage-free implies arbitrage-free}"
+\end{itemize}
+ \begin{figure}[!h]
+\includegraphics[width=0.1\textwidth]{figures/??.png}
+%\caption{Start from a movie -- \emph{The Social Network}}
+  \end{figure}
+}
+
+
+\frame{
+\frametitle{Persistent Homology: online algorithm for topology tracking (e.g Edelsbrunner-Harer'08)}
+
+ \begin{columns}
+\begin{column}{0.6\textwidth}
+\begin{figure}[h]
+\centering
+	\includegraphics[width=0.7\textwidth]{figures/persistent.png}
+	\caption{Persistent Homology Barcodes}
+\end{figure}
+\end{column}
+
+\begin{column}{0.4\textwidth}
+\begin{itemize}
+\item vertice, edges, and triangles etc. sequentially added
+\item online update of homology
+\item $O(m)$ for surface embeddable complex; and $O(m^{2.xx})$  in general ($m$ number of simplex)
+\end{itemize}
+\end{column}
+\end{columns}
+}
+
+
+
+%\section[Hodge Theory]{What's Hodge Theory}
+
+%\frame{
+%\frametitle{Helmholtz-Hodge Decomposition}
+%\begin{theorem}[c.f. Marsden-Chorin 1992] A vector field $\bf{w}$ on a simply-connected $D$ can be uniquely decomposed in the form
+%\[ {\bf{w}} = {\bf{u}} + \grad \phi \]
+%where $\bf{u}$ has zero divergence and is parallel to $\partial D$.
+%\end{theorem}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.4\textwidth]{figures/Helmholtz-hodge.png} \ \ \ \
+%\includegraphics[width=0.2\textwidth]{figures/Chorin-Marsden.png}
+%%\caption{Courtesy by Anil Hirani}
+%  \end{figure}
+%  }
+%\subsection{Hodge Theory in Linear Algebra}
+%\frame{
+%	\frametitle{Hodge Theory in Linear Algebra}%
+%	For inner product spaces $\X$, $\Y$, and $\Z$, consider	
+%	\[
+%	\X \xrightarrow{A} \Y \xrightarrow{B} \Z.
+%	\]
+%	and $\Delta =A A^\ast + B^\ast B: \Y\to \Y$ where $(\cdot )^\ast$ is adjoint operator of $(\cdot)$.
+%	
+%	If
+%	\[ \textcolor{red}{B \circ A = 0},\]
+%	then $\ker(\Delta) = \ker(A^\ast) \cap \ker(B)$ and \emph{orthogonal} decomposition
+%	\[ \Y = \textcolor{green}{\im (A)} + \textcolor{brown}{\ker(\Delta)} + \textcolor{blue}{\im (B^\ast)} \]
+%	Note: $\textcolor{blue}{\ker(B)/\im(A)}\simeq \ker(\Delta)$ is the (real) (co)-homology group ($\R\to$ rings; vector spaces$\rightarrow$module).
+%%	Note: let $V=\X \oplus \Y\oplus \Z$ and $D=diag(A,B,0)$.
+%	}
+%	
+%\frame{
+%	\frametitle{Hodge Decomposition=Rank-Nullity Theorem}%
+%	Take product space $V=\X\times\Y\times\Z$, define	
+%	\[
+%	D = \left(
+%	\begin{array}{ccc}
+%	0 & 0 & 0 \\
+%	A & 0 & 0 \\
+%	0 & B & 0
+%	\end{array}
+%	\right), \ \ \ BA = 0,
+%	\]
+%	\textcolor{red}{Laplacian}
+%	$$L=(D+D^\ast)^2=\diag(A^\ast A, AA^\ast+B^\ast B, BB^\ast)=\diag(L_0,L_1,L_2^{(down)})$$
+%	\textcolor{red}{Rank-nullity Theorem}: $\im(D) + \ker(D^\ast) = V$, in particular
+%	\begin{eqnarray*}
+%	\Y & = & \im(A) + \ker(A^\ast) \\
+%	& = & \im(A) + \ker(A^\ast)/\im(B^\ast) + \im(B^\ast), \mbox{since $\im(A)\subseteq\ker(B)$} \\
+%	& = & \im(A) + \ker(A^\ast)\cap \ker(B) + \im(B^\ast)
+%	\end{eqnarray*}
+%	}
+%
+%\frame{
+%	\frametitle{Terminology}
+%	\begin{itemize}
+%	\item \textcolor{blue}{coboundary maps}: $A:\X\to \Y$, $B : \Y\to \Z$
+%	\item \textcolor{blue}{cochains}: elements in $\X$, $\Y$, $\Z$
+%	\item \textcolor{blue}{cochain complex}:$\X \xrightarrow{A} \Y \xrightarrow{B} \Z$.
+%	\item \textcolor{blue}{cocycles}: elements of $\ker(A)$
+%	\item \textcolor{blue}{coboundaries}: elements of $\im(B)$
+%	\item \textcolor{blue}{cohomology classes}: elements of $\ker(A)/\im(B)$
+%	\item \textcolor{blue}{harmonic cochains}: elements of $\ker(A^\ast A + BB^\ast)$
+%	\item \textcolor{blue}{Betti number}: $\dim \ker(A^\ast A + BB^\ast)$
+%	\item \textcolor{blue}{closed}: $Ax = 0$
+%	\item \textcolor{blue}{exact}: $x = Bz$
+%	\end{itemize}
+%}	
+%
+%\subsection{Hodge Theory on Riemannian Manifolds}
+%
+%\frame{
+%\frametitle{Classical Hodge Theory on Riemannian Manifolds}
+%\begin{itemize}
+%\item (\textcolor{blue}{W.V.D. Hodge}, 1903-1975) de Rham complex: % $d^2=d_k \circ d_{k-1}=0$
+%\[ 0\to \Omega^0(M) \xrightarrow{d_0} \Omega^1(M) \xrightarrow{d_1} \cdots \xrightarrow{d_{n-1}} \Omega^n(M)\xrightarrow{d_n} 0\]
+%%\item There are more, e.g. Hodge Theory on Sheafs (Joe Friedman).
+%\subitem $M$: compact Riemannian manifold
+% \subitem $\Omega^k(M)$: with $k$-differential forms
+% \subitem $d$: the exterior derivative operator %whose adjoint, codifferential operator $\delta$ satisfies $\left< d u, v\right>=\left< u , \delta v\right>$
+% \[ d^2=d_k \circ d_{k-1}=0\]
+%\end{itemize}
+%%\begin{figure}[!h]
+%%\centering
+%%\includegraphics[width=0.3\textwidth]{figures/Ozdaglar.png}
+%%\caption{Courtesy by Asu Ozdaglar}
+%%  \end{figure}
+%}
+%
+%
+%\subsection{Hodge Theory on Metric Spaces}
+%\frame{
+%\frametitle{Hodge Theory on Metric Spaces}
+%\begin{itemize}
+%\item (Alexander-Spanier, \textcolor{blue}{Bartholdi-Schick-Smale-Smale, 2011}) %complex, $d^2 =0$
+%\[ 0\to L^2(X) \xrightarrow{d_0} L^2(X^2) \xrightarrow{d_1} \cdots \xrightarrow{d_{n-1}} L^2(X^n)\xrightarrow{d_n} \cdot \]
+%%\item There are more, e.g. Hodge Theory on Sheafs (Joe Friedman).
+%\subitem $X$: metric space
+%\subitem $L^2(X)$: square integral functions on $X$
+%\subitem $d: L^2(X^{k})\to L^2(X^{k+1})$ -- finite difference %(Gilboa-Osher'08)
+%\[ (d f) (x_0,\ldots,x_k) = \sum_{i=1}^k (-1)^i \prod_{j\neq i} \sqrt{K(x_i,x_j)} f(x_{-i}) \]
+%\subitem adjoint operator $\delta: L^2(X^{k+1}) \to L^2(X^k)$
+%\[ \delta g(x) = \sum_{i=0}^k (-1)^i \int_X \prod_{j=0}^{k-1} \sqrt{K(t,x_j)} g(x_0,\ldots,x_{i-1},t,x_{i},\ldots,x_{k-1}) dt \]
+%\end{itemize}
+%%\begin{figure}[!h]
+%%\centering
+%%\includegraphics[width=0.3\textwidth]{figures/Ozdaglar.png}
+%%\caption{Courtesy by Asu Ozdaglar}
+%%  \end{figure}
+%}
+%
+%
+%%\frame{
+%%\frametitle{continued: Hodge Theory on Metric Spaces}
+%%\begin{thm}[Bartholdi-Schick-Smale-Smale-Baker, 2011]
+%%If $X$ satisfies some regularity conditions, then Hodge decomposition holds
+%%\[ L^2(X^k) = \im (d_{k-1}) \oplus \ker(\Delta_k) \oplus \im(\delta_k) \]
+%%In particular, if $X$ is a compact Riemannian manifold with regularity conditions on convexity and curvature, there is a scale/kernel such that
+%%$\ker(\Delta_k)$ is isomorphic to the $L^2$-cohomology and de Rham cohomology.
+%%\end{thm}
+%%
+%%\begin{itemize}
+%%\item $\Delta=d \delta+ \delta d$
+%%\item for finite $X$, it essentially builds up a \v{C}ech complex for point cloud data at certain scale and applies combinatorial Hodge theory
+%%\end{itemize}
+%%}
+%
+%\subsection{Combinatorial Hodge Theory on Simplicial Complexes}
+%\frame{
+%\frametitle{Combinatorial Hodge Theory on Simplicial Complexes}
+%\[ 0\to \Omega^0(X) \xrightarrow{d_0} \Omega^1(X) \xrightarrow{d_1} \cdots \xrightarrow{d_{n-1}} \Omega^n(X)\xrightarrow{d_n} \cdots\]
+%
+%\begin{itemize}
+%\item $X$ is finite
+%\item $\chi (X)\subseteq 2^X$: \textcolor{red}{simplicial complex} formed by $X$ $\Leftrightarrow$ if $\tau\in \chi (X)$ and $\sigma\subseteq \tau$, then $\sigma\in \chi(X)$
+%\item  \textcolor{red}{$k$-forms or cochains} as alternating functions \[
+%	\Omega^{k}(X)=\{u:\chi_{k+1}(X)\rightarrow
+%	\mathbb{R},u_{i_{\sigma(0)},\dots,i_{\sigma(k)}}=\operatorname*{sign}%
+%	(\sigma)u_{i_{0},\ldots,i_{k}}\}
+%	\]
+%	%where $\sigma \in\mathfrak{S}_{k+1}$ is a permutation on $(0,\dots,k)$.
+%\item \textcolor{red}{coboundary maps} $d_k : \Omega^k(X) \to \Omega^{k+1}(X)$ alternating difference
+%	  \[ (d_k u)(i_0,\ldots,i_{k+1}) = \sum_{j=0}^{k+1} (-1)^{j+1} u(i_0,\ldots,i_{j-1},i_{j+1},\ldots,i_{k+1}) \]
+%	  \item  $d_k\circ d_{k-1} =0$
+%\end{itemize}
+%}
+%
+%\frame{
+%
+%	  \frametitle{Example: graph and clique complex}
+%	
+%	  \begin{itemize}
+%	  \item $G=(X,E)$ is a undirected but oriented graph
+%	  \item Clique complex $\chi_G\subseteq 2^X$ collects all complete subgraph of $G$
+%	  \item  $k$-forms or cochains $\Omega^{k}(\chi_G)$ as alternating functions:	
+%	  \subitem \textcolor{red}{0-forms}: $v:V\to \R \cong \R^{n}$
+%	  \subitem \textcolor{red}{1-forms as skew-symmetric functions}: $w_{ij}=-w_{ji}$
+%	  \subitem \textcolor{red}{2-forms as triangular-curl}: $z_{ijk} = z_{jki}=z_{kij}=-z_{jik}=-z_{ikj}=-z_{kji}$
+%	\item coboundary operators as alternating difference operators:
+%	  \subitem $(d_{0} v) (i,j)= v_{j} - v_{i}=:(\operatorname*{\textcolor{red}{grad}} v)(i,j)$
+%	  \subitem  $(d_{1} w) (i,j,k) = (\pm)( w_{ij}+ w_{jk} + w_{ki})=:(\operatorname*{\textcolor{red}{curl}} w)(i,j,k)$
+%%	  \item Adjoints induced by metrics/inner products on $\Omega^{k}(\chi_G)$:
+%%	  \subitem $(\operatorname**{\textcolor{red}{div}} w)(i) := - (d_{0}^{\ast} w )(i) := \sum w_{i\ast}  $
+%	  \item \textcolor{red}{$d_1 \circ d_0 = \curl(\grad u)= 0$}
+%	  \end{itemize}
+%}
+%
+%\frame{
+%\frametitle{Hodge Laplacian}
+%\begin{itemize}
+%%\item adjoint $\delta = d^\ast$ depending on the inner product on $\Omega^k(X)$
+%\item combinatorial Laplacian $\Delta = d_{k-1} d_{k-1}^\ast + d_k^\ast d_k$
+%\subitem $k=0$, $\Delta_0 = d_0^\ast d_0$ is the (unnormalized) \textcolor{red}{graph Laplacian}
+%\subitem $k=1$, 1-Hodge Laplacian (Helmholtzian)
+%	\[ \textcolor{red}{\Delta_1 = \curl \circ \curl^\ast - \dive \circ \grad} \]
+%\item Hodge decomposition holds for $\Omega^k(X)$
+%\subitem \textcolor{red}{$\Omega^k(X)=\im (d_{k-1}) \oplus \ker(\Delta_k) \oplus \im(\delta_k) $}
+%\subitem $\dim(\Delta_k) = \beta_k(\chi(X))$
+%\end{itemize}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.3\textwidth]{figures/Ozdaglar.png}
+%\caption{Courtesy by Asu Ozdaglar}
+%  \end{figure}
+%
+%}
+
+%\frame{
+%	  \frametitle{Combinatorial Laplacian}	
+%	  \begin{itemize}
+%	  \item Define the $k$-dimensional \textcolor{red}{combinatorial Laplacian}, $\Delta_k:\Omega^k \to \Omega^k$ by
+%	\[ \Delta_k = d_{k-1} d_{k-1}^\ast + d_k^\ast d_k, \qquad k>0 \]
+%	  \item $k=0$, $\Delta_0 = d_0^\ast d_0$ is the well-known \textcolor{red}{graph Laplacian}
+%	  \item $k=1$, 1-Hodge Laplacian
+%	\[ \textcolor{red}{\Delta_1 = \curl \circ \curl^\ast - \dive \circ \grad} \]
+%	  \item Important Properties:
+%	  \subitem $\Delta_k$ positive semi-definite
+%	  \subitem $\ker(\Delta_k)=\ker(d_{k-1}^\ast)\cap\ker(d_k)$: $k$-\textcolor{red}{Harmonics}, dimension equals to $k$-th Betti number of $\chi_G^3$
+%	\end{itemize}
+%}
+
+
+%\frame{
+%\frametitle{Combinatorial Hodge Theory on Triangulated Graphs}
+%\begin{itemize}
+%\item Graph $G=(V,E)\mapsto\chi_G^{3}=(V,E,T)$, triangular clique complex
+%\item Every edge flow $\in l^2(E)$ admits the orthogonal decomposition
+%	\[
+%	\text{gradient flow} + \text{globally cyclic} + \text{locally (triangularly) cyclic}	\]
+%%\item Matrix: every skew-symmetric matrix $X=-X^T$ \textcolor{red}{with missing values} can be decomposed into
+%%\[ X = X^{(1)} + X^{(2)} + X^{(3)} \]
+%%where $X^{(1)}_{ij}=\beta_i - \beta_j$ a gradient flow, $X^{(2)}$ and $X^{(3)}$ are cyclic flows ($\sum_{j\sim i} X^{(*)}_{ij}=0$, harmonic and curl).
+%%%\item There are more, e.g. Hodge Theory on Sheafs (Joe Friedman).
+%\end{itemize}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.3\textwidth]{figures/Ozdaglar.png}
+%\caption{Courtesy by Asu Ozdaglar}
+%  \end{figure}
+%}
+%
+
+
+%\frame{
+%	\frametitle{Summary}%
+%	Discrete de Rham complex:
+%	\[
+%	\Omega^{0} \xrightarrow{d_0} \Omega^{1}\xrightarrow{d_1} \Omega^{2},
+%	\]
+%	i.e.
+%	\[
+%	\text{Potential}\xrightarrow{\operatorname*{grad}}\text{Edge-flow}%
+%	\xrightarrow{\operatorname*{curl}}\text{Triangular-curl}%
+%	\]
+%	\[
+%	\text{Potential}%
+%	\xleftarrow{\operatorname*{grad}^\ast (=:-\operatorname*{div})}\text{Edge-flow}%
+%	\xleftarrow{\operatorname*{curl}^\ast}\text{Triangular-curl}.
+%	\]
+%	Note that
+%	\[
+%	\operatorname*{curl}\circ\operatorname*{grad}(\text{Potential})=0 \Leftrightarrow d_1 d_0 =0.
+%	\]
+%	Hodge decomposition
+%	\[ \text{Edge-flow}= \operatorname*{grad}(\text{Potential})\oplus \text{harmonic}\oplus {\curl}^\ast(\text{Triangular}) \]
+%	}
+
+%\frame{
+%	\frametitle{Combinatorial Hodge theory: matrix version}%
+%
+%	A skew-symmetric matrix $W$ associated with $G$ (\textcolor{red}{with missing values}) can be decomposed uniquely
+%	\[
+%	W = W_{1} + W_{2} + W_{3}
+%	\]
+%	where
+%	\tiny{
+%	\begin{itemize}
+%	\item $W_{1}$ satisfies
+%		\subitem `\textit{integrable}': $W_{1}(i,j)=v_{j}-v_{i}$ for some $v:V\rightarrow
+%	\mathbb{R}$.
+%	\item $W_{2}$ satisfies
+%		\subitem `\textit{curl free}': $W_{2}(i,j)+W_{2}(j,k)+W_{2}(k,i)=0$ for all $3$-clique
+%	$(i,j,k)$;
+%		\subitem `\textit{divergence free}': $\sum_{j:(i,j)\in E}W_{2}(i,j)=0$
+%	\item $W_{3}\perp W_{1}$ and $W_{3}\perp W_{2}$, which is divergence-free but not curl-free
+%	\end{itemize}
+%	}
+%}
+%
+
+%\frame{
+%	\frametitle{Forgetful functors}
+%	\[ \text{Riemannian manifolds} \to \text{Metric spaces} \to \text{Cell complexes} \]
+%	\begin{itemize}
+%	\item From differentiable to combinatorial structures, Hodge decomposition is functorial (invariant)
+%	\item Topological invariants (homology) are preserved in such coarse-grained functors
+%	\item Natural for data analysis, a connection between geometry and topology: harmonic basis
+%	\item More important than data itself, \textcolor{blue}{relations} between data via functions, mappings, etc.
+%	\end{itemize}
+%	}
+%%
+%\frame{
+%	  \frametitle{Clique Complex of a Graph}
+%	Extend graph $G=(V,E)$ to a \textcolor{red}{simplicial complex} $\chi(G)$ by
+%	attaching triangles
+%	  \begin{itemize}
+%	  \item 0-simplices $\chi_0(G)$: $V$
+%	  \item 1-simplices $\chi_1(G)$: $E$
+%	  \item 2-simplices $\chi_2(G)$: 3-cliques $\{i,j,k\}$ such that every edge exists in $E$
+%	  \item $k$-simplices $\chi_{k}(G)$: $(k+1)$-cliques $\{i_{0},\dots
+%	,i_{k}\}$ of $G$
+%	  \end{itemize}
+%	  \textcolor{blue}{Note}: it suffices here to construct $\chi(G)$ up to dimension \textcolor{red}{2}!
+%}
+
+
+
+
+
+%\section[Applications]{Applications of Hodge Decomposition}
+%
+%\frame{
+%	\frametitle{Applications of Hodge Decomposition}
+%	\begin{itemize}
+%	\item Boundary Value Problem (Schwarz, Chorin-Marsden'92)
+%	\item Computer vision
+%	\subitem Optical flow decomposition and regularization (Yuan-Schn\"{o}rr-Steidl'2008, etc.)
+%	\subitem Retinex theory and shade-removal (Ma-Morel-Osher-Chien'2011)
+%	\subitem Relative attributes (Fu-Xiang-Y. et al. 2014)
+%	\item Sensor Network coverage (Jadbabai et al.'10)
+%	\item Statistical Ranking or Preference Aggregation (Jiang-Lim-Y.-Ye'2011, etc.)
+%	\item Decomposition of Finite Games (Candogan-Menache-Ozdaglar-Parrilo'2011)
+%	\end{itemize}
+%}
+%
+
+%\subsection{Computer Vision}
+%
+%\frame{
+%\frametitle{Optical Flow Decomposition and Regularization}
+%\begin{itemize}
+%\item Rudin-Osher-Fatemi'1992: piecewise \textcolor{red}{constant} flows
+%\[ \frac{1}{2}\|v - u\|_2^2 + TV(u), \ \ u,v\in \R^2 \]
+%\[ TV(u):=\int \sqrt{(\grad u_1)^2 + (\grad u_2)^2},  \]
+%\item Yuan-Schn\"{o}rr-Steidl'2007: piecewise \textcolor{red}{harmonic} flows
+%\[ TV(u)\to R(u) = \int \sqrt{(\dive u)^2 + (\curl u)^2} \]
+%\end{itemize}
+%}
+%
+%\frame{
+%\frametitle{Example: periodic motions are harmonic}
+%	\begin{figure}[!t]
+%	\includegraphics[width=0.45\textwidth]{./figure/flow0.png}
+%	\includegraphics[width=0.5\textwidth]{./figure/TV-H.png} \\
+%	\caption{Harmonic flows are adaptive to object rotation in receptive fields}
+%	\end{figure}
+%}
+%
+%
+%\frame{
+%\frametitle{Adelson's iIlusion in Computer Vision}
+%	\begin{figure}[!t]
+%	\includegraphics[width=0.4\textwidth]{./figures/checkershadow_illusion4med.jpg}
+%	\includegraphics[width=0.4\textwidth]{./figures/checkershadow_proof4med.jpg} \\
+%	\caption{Adelson's illusion: on the left the chess board is shadowed by a column such that the white square has the same illuminance intensity as the black square, proved by the right picture.  } \label{fig:illustration}
+%  	\end{figure}
+%}
+%
+%
+%\frame{
+%\frametitle{Retinex Theorey based on Approximation of Gradient Flows}
+%
+%  \begin{itemize}
+%  \item The edge information is a gradient field of intensity $\grad I$
+%  \item Shade adds \textcolor{red}{sparse} noise $Y = \grad I + E$
+%  \item Sparse approximation of de-noised gradient field $\textcolor{red}{\min_X \|\grad X - T(Y)\|_1}$
+%  \end{itemize}
+% \begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.3\textwidth]{figures/Osher_Retina.png}
+%\caption{Ma-Morel-Osher-Chien 2011}
+%  \end{figure}
+%}
+
+%\subsection{Statistical Ranking via Paired Comparison Method}
+% \subsection{Examples}
+
+
+%\subsection{Ranking in Economics}
+
+
+%\frame{
+%\frametitle{Implicit Feedback from Web Clicks}
+%  \begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.8\textwidth]{figures/click.png}
+%\caption{Clicks implies preference}
+%  \end{figure}
+%}
+
+
+%\frame{
+%\frametitle{Mean Opinion Score in Ranking}
+%
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.6\textwidth]{figures/MOS_table.png}
+%%caption{Start from a movie -- \emph{The Social Network}}
+%  \end{figure}
+% widely used for evaluation of videos, as well books and movies, etc., but
+%  \medskip
+%  \begin{itemize}
+%  \item Ambiguity in definition of the \textcolor{red}{scale};
+%  \item Difficult to verify whether a participant gives \textcolor{red}{false ratings}
+%either intentionally or carelessly.
+%  \end{itemize}
+%}
+%
+%
+%\frame{
+%\frametitle{Netflix example revisited}
+%
+%	  \begin{columns}
+%	  \small \begin{column}{0.47\textwidth}
+%	  The \textbf{first order} statistics, mean score for each product, is often
+%inadequate:
+%	  \begin{itemize}
+%	  \item most customers would rate just a \textcolor{blue}{very small portion} of the products
+%	  \item different products might have different raters, whence mean scores
+%involve noise due to \textcolor{blue}{arbitrary individual rating scales} (right figure)	
+%	  \end{itemize}
+%	  \textcolor{red}{How about high order statistics}?
+%	  \end{column}
+%	  \begin{column}{0.53\textwidth}
+%	  \begin{figure}
+%	\includegraphics[width=0.8\textwidth]{figures/nflix_shakespeare.jpg} \\
+%	\ \ \includegraphics[width=0.75\textwidth]{figures/nflix_dune.jpg}
+%	  \end{figure}
+%	  \end{column}
+%	  \end{columns}
+%}
+
+%\frame{
+%\frametitle{Paired Comparisons}
+%\begin{itemize}
+%\item Individual decision process in paired comparison is simpler than in the typical MOS test, as the five-scale rating is reduced to a \textcolor{blue}{dichotomous} choice;
+%\item But the paired comparison methodology leaves a \textcolor{red}{heavier
+%burden} on participants with a larger number $n \choose 2$ of comparisons
+%\item Moreover, raters and item pairs enter the system in a \textcolor{red}{dynamic} and \textcolor{red}{random} way;
+%\end{itemize}
+%
+%Here we propose:
+%
+%\begin{center}
+%\textcolor{blue}{Hodge Theoretic Approach \\ for Pairwise Ranking on Random Graphs}
+%\end{center}
+%}
+
+%\frame{
+%\frametitle{Most Relevant Topics in ICCHA 2011}
+%\begin{itemize}
+%\item Vin de Silva, Circular coordinates from Harmonic forms (Wednesday)
+%\item Nat Smale, Hodge theory on metric spaces (\textcolor{red}{11:10-11:50am today, LT-1!})
+%\end{itemize}
+%}
+%
+
+%\subsubsection{HodgeRank on Graphs}
+
+
+%\frame{
+% \frametitle{Equivalently, in weighted Least Square}
+%\[
+%\min_{s\in {\mathrm R}^{|V|}}  \sum_{\{i,j\}\in E} \omega_{ij} (s_i - s_j -
+%\hat{Y}_{ij})^2,
+%\]
+%where
+% \begin{itemize}
+% \item $\hat{Y}_{ij}=( \sum_\alpha \omega_{ij}^\alpha Y^\alpha_{ij}) / (\sum_\alpha \omega_{ij}^\alpha )$, skew-symmetric matrix
+% \item $\omega_{ij} = \sum_\alpha \omega^\alpha_{ij}$
+% \item Inner product induced on $R^{E}$, $\langle u,v\rangle_\omega = \sum u_{ij} v_{ij} \omega_{ij}$ where $u,v$ skew-symmetric
+% \end{itemize}
+% Note: \textcolor{red}{NP-hard} \textcolor{blue}{Kemeny Optimization, or Minimimum-Feedback-Arc-Set}:
+% \[ \min_{s\in {\mathrm R}^{|V|}}  \sum_{\alpha,\{i,j\}\in E} \omega_{ij}^\alpha (\textcolor{red}{\sign}(s_i - s_j) -
+%\hat{Y}^\alpha_{ij})^2, \]
+%}
+
+%\frame{
+%\frametitle{Statistical General Linear Models for Binary Choices}
+%Let $\pi_{ij}$ be the probability that $i$ is preferred to $j$. The family of \textcolor{red}{linear models} assumes that
+%\[ \pi_{ij} = \Phi(s_i - s_j) \]
+%for some symmetric cumulated distributed function $\Phi$. Reversely, given an observation $\hat{\pi}$, define
+%\[ \hat{Y}_{ij} = \Phi^{-1}(\hat{\pi}_{ij}) \]
+%One would like $\hat{Y}_{ij} \approx \hat{s}_i - \hat{s}_j$ for some $\hat{s}: V\to \R$ (in least squares, e.g.).
+%}
+%
+%\frame{
+%\frametitle{Examples of General Linear Models}
+%1. \emph{Uniform} model:
+%\begin{align}
+%\hat{Y}_{ij}=2\hat{\pi}_{ij}-1.
+%\end{align}
+%
+%2. \emph{Bradley-Terry} model:
+%\begin{align}
+%\hat{Y}_{ij}={\mathrm{log}}\frac{\hat{\pi}_{ij} } {1-\hat{\pi}_{ij}}.
+%\end{align}
+%
+%3. \emph{Thurstone-Mosteller} model:
+%\begin{align}
+%\hat{Y}_{ij}=\Phi^{-1}(\hat{\pi}_{ij}).
+%\end{align}
+%%where $F$ is essentially the Gauss error function
+%\[
+%\Phi(x)= \frac{1}{\sqrt{2\pi}} \int_{-x/[2\sigma^2 (1-\rho)]^{1/2}}^\infty e^{-\frac{1}{2} t^2 } d t .
+%\]
+%
+%4. \emph{Angular transform} model:
+%\begin{align}
+%\hat{Y}_{ij}=\arcsin(2\hat{\pi}_{ij}-1).
+%\end{align}
+%}
+%
+%\frame{
+%\frametitle{Hodge Decomposition on Graphs [Jiang-Lim-Y.-Ye'11]}
+% \begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.4\textwidth]{figures/HodgeRank.png}
+%%\caption{Start from a movie -- \emph{The Social Network}}
+%  \end{figure}
+% Paired comparison data $\hat{Y}_{ij}\in l^2_\omega(E)$ admits an \textcolor{red}{orthogonal} decomposition,
+% \begin{equation}
+%\textcolor{red}{\hat{Y} = \hat{Y}^{(g)} + \hat{Y}^{(h)} + \hat{Y}^{(c)}},
+%\end{equation}
+%where
+%\begin{equation}
+%\hat{Y}^{(g)}_{ij}  = \hat{\beta}_i - \hat{\beta}_j,\ \ \textrm{for some}\ \hat{\theta}\in {\mathrm R}^{V} ,
+%\end{equation}
+%\begin{equation} \label{eq:curl-free}
+%\hat{Y}^{(h)}_{ij} + \hat{Y}^{(h)}_{jk} + \hat{Y}^{(h)}_{ki} = 0, \ \textrm{for each $\{i,j,k\}\in T$} ,
+%\end{equation}
+%\begin{equation} \label{eq:divergence-free}
+%\sum_{j\sim i} \omega_{ij}\hat{Y}^{(h)}_{ij} = 0, \ \textrm{for each $i\in V$} .
+%\end{equation}
+%}
+
+
+%\section{Online HodgeRank}
+%\subsection{Hodge Decomposition of Paired Ranking}
+%\frame{
+%\frametitle{Minimax Optimal Convergence Rates}
+%\begin{itemize}
+%\item Choose $\gamma_t\sim t^{-1/2}$ (e.g. a=$1/\lambda_1(\Delta_0)$ and $b$ large enough)
+%\item In this case, $s_t$ converges to $s^\ast$ (population solution), with probability $1-\delta$, in the (optimal) rate of $t$
+%\[ \|s_t - s^\ast\|\leq O\left(\textcolor{red}{t^{-1/2} \cdot \lambda_2^{-3/2}(\Delta_0) }\cdot \log^{1/2} \frac{1}{\delta} \right) \]
+%where $\lambda_2(\Delta_0)$ is the Fiedler Value of graph Laplacian
+%% \item The same asymptotic rates as batch algorithm
+%%\item Dependence on $\lambda_1^{-3/2}$ can be improved to $\lambda_1^{-1}$ by Ji Liu (U Wisc-Madison) (\textcolor{red}{optimal order of $\kappa$?})
+%\end{itemize}
+%\textcolor{red}{Open}: Almost sure convergence is normally achieved by Martingale-convergence Thm, with additional mean square error rate $\E\|s_t -s^\ast\|^2 \leq O(t^{-1} \cdot \lambda_2^{-2}(\Delta_0))$, in what sense it is \textcolor{blue}{optimal in both $t$ and $\lambda_2$}? Can we reach both a.s. and error rates using \textcolor{blue}{Bernstein type inequality}?
+%%\begin{figure}[!h]
+%%\centering
+%%\includegraphics[width=0.4\textwidth]{figures/onlinerates.png}
+%%%\caption{Start from a movie -- \emph{The Social Network}}
+%%  \end{figure}
+%%
+%}
+
+
+%\frame{
+%\frametitle{Averaging Process (Ruppert 1988; Y. 2010)}
+%A second stage averaging process, following $s_{t+1}$ above
+%\[ z_{t+1} = \frac{t}{t+1} z_t + \frac{1}{t+1} s_{t+1} \]
+%with $z_0=s_0$.
+%
+%Note:
+%\begin{itemize}
+%\item Averaging process speeds up convergence for various choices of $\gamma_t$
+%\item One often choose $\gamma_t=c$ to track dynamics
+%\item In this case, $z_t$ converges to $\hat{s}$ (population solution), with probability $1-\delta$, in the rate (optimal?)
+%\[ \|z_t - \hat{s}\|\leq O\left(\textcolor{red}{t^{-1/2} \cdot \lambda_2^{-2}(\Delta_0)} \cdot \log^{1/2} \frac{1}{\delta} \right) \]
+%\end{itemize}
+%}
+%
+%\subsection{Curl and Harmonics}
+
+%\frame{
+%\frametitle{Computation Issue of Curl and Harmonics}
+%People may think that curl part seems easier to solve
+%$$\Delta_1^{up} \hat{y}^{(c)} = \delta_1^T \hat{y},$$
+%where $\Delta_1^{up}=\delta_1^T \delta_1$. But \textcolor{red}{Forman's Ricci curvature}
+%\[ \kappa(\Delta,e):= \#(\gamma\succ e) + 2 - \#(\mbox{parallel neighbors of $e$}) \]
+%\begin{itemize}
+%\item if $\kappa(\Delta,e)\geq 0$ for every $e$, then $\Delta$ is \textcolor{blue}{diagonal dominance}
+%\item any symmetric diagonal dominance matrix can be converted to graph Laplacian via 2-color covering
+%\item upper part $\Delta_1^{up}$ is less diagonal dominant as its Ricci curvature is $\#(\gamma \succ e) - \#(\mbox{neighbors of $e$}) <  \kappa(\Delta,e)$
+%\end{itemize}
+%}
+
+%\frame{
+%\frametitle{Harmonic ($Y^{(2)}$) and Triangular Curl ($Y^{(3)}$) }
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.45\textwidth]{figures/harmonic.pdf}
+%\includegraphics[width=0.45\textwidth]{figures/cyclic0.pdf}
+%\caption{Left: example of $\hat{Y}^{(2)}$, harmonic; Right: example of $\hat{Y}^{(3)}$, curl.}
+%  \end{figure}
+%}
+
+
+%
+%
+%%\frame{
+%%	\frametitle{Basic Problems in HodgeRank}
+%%	\begin{itemize}
+%%	\item sampling method for crowdsourcing
+%%	\subitem passive, active, random graph theory, etc.
+%%	\item reliability of data: inconsistency
+%%	\subitem outlier detection and robust ranking
+%%	\item sequential or streaming data: online algorithms
+%%	\subitem persistent homology, online ranking
+%%	\end{itemize}
+%%}
+%
+%
+%%\frame{
+%%	\frametitle{Triangular Transitivity vs. Consistency}
+%%	\textbf{Triangular Transitivity subspace}: curl free
+%%	\[
+%%	\{X\mid X_{ij}+X_{jk}+X_{ki}=0\text{ for all
+%%	$3$-cliques}\}
+%%	\]
+%%	\begin{theorem}
+%%	If the clique complex $\chi_G$ has first Betti number $\beta_1=0$, then triangular transitivity (local consistency) implies global consistency, i.e. $X_{ij}=s_i - s_j$ for some $s:V\to \R$.
+%%	\end{theorem}
+%%	Note: this is the Arbitrage-free theory in finance: triangular arbitrage-free implies arbitrage-free.
+%%}
+%%
+%%
+%%\frame{
+%%	\frametitle{Saari's Geometric Illustration}
+%%	\begin{figure}
+%%	\includegraphics[width=0.9\textwidth]{figures/Saari.jpg}
+%%%	\caption{$Y^{(1)} is $l_2$-projection on the transitivity plane, compared to $l_1$-projection on }
+%%	\end{figure}
+%%}
+%%
+%
+%
+%
+\section{Random Graphs}
+
+\subsection{Phase Transitions in Topology}
+\frame{
+\frametitle{Random Graph Models for Crowdsourcing}
+\begin{itemize}
+\item Recall that in crowdsourcing ranking on internet,
+\subitem unspecified raters compare item pairs randomly
+\subitem online, or sequentially sampling
+\item random graph models for experimental designs
+\subitem $P$ a distribution on random graphs, invariant under permutations (relabeling)
+\subitem \textcolor{red}{Generalized de Finetti's Theorem} [\textcolor{blue}{Aldous 1983, Kallenberg 2005}]: $P(i,j)$ ($P$ ergodic) is an uniform mixture of $$h(u,v)=h(v,u):[0,1]^2\to [0,1],$$ $h$ unique up to sets of zero-measure
+\subitem \textcolor{red}{Erd\"{o}s-R\'{e}nyi}: $P(i,j) = P(edge) = \int_0^1\int_0^1 h(u,v)du dv=:p$
+\subitem edge-independent process (Chung-Lu'06)
+\end{itemize}
+}
+
+
+\frame{
+\frametitle{Phase Transitions in Erd\"{o}s-R\'{e}nyi Random Graphs}
+ \begin{figure}[!h]
+\centering
+\includegraphics[width=0.6\textwidth]{./figures/betti.png}
+  \end{figure}
+}
+
+\frame{
+\frametitle{Phase Transitions of Large Random Graphs}
+ For an Erdos-Renyi random graph $G(n,p)$ with $n$ vertices and each edge independently emerging with probability $p(n)$,
+
+\begin{itemize}
+\item (Erd\"{o}s-R\'{e}nyi 1959) \textcolor{red}{One phase-transition} for $\beta_0$
+ \subitem $p<<1/n^{1+\epsilon}$ ($\forall \epsilon>0$), almost always disconnected
+ \subitem $p>>log(n)/n$, almost always connected
+  \item (Kahle 2009) \textcolor{red}{Two phase-transitions} for $\beta_k$ ($k\geq 1$)
+\subitem  $p<< n^{-1/k}$ or $p>> n^{-1/(k+1)}$, almost always $\beta_k$ vanishes;
+\subitem $n^{-1/k}<<p<<n^{-1/(k+1)}$, almost always $\beta_k$ is nontrivial
+%\item may come from discrete Morse Theory
+  \end{itemize}
+For example: with $n=16$, $75\%$ distinct edges included in $G$, then $\chi_G$ with high probability is connected and loop-free. In general, \textcolor{red}{$O(n\log(n))$} samples for connectivity and \textcolor{red}{$O(n^{3/2})$} for loop-free.
+}
+
+\frame{
+	\frametitle{Three sampling methods}
+	\begin{itemize}
+	\item \emph{Uniform sampling with replacement (i.i.d.)} ($G_0(n,m)$).
+	\subitem \small{Each edge is sampled from the uniform distribution on $\binom{n}{2}$ edges, with replacement. This is a weighted graph and the sum of weights is $m$.}
+	\item \emph{Uniform sampling without replacement} ($G(n,m)$).
+	\subitem \small{Each edge is sampled from the uniform distribution on the available edges without replacement. For $m\leq \binom{n}{2}$, this is an instance of the Erd\"{o}s-R\'{e}nyi random graph model $G(n,p)$ with $p=m/\binom{n}{2}$.}
+	\item \emph{Greedy sampling} ($G_\star(n,m)$).
+	\subitem \small{Each pair is sampled to maximize the algebraic connectivity of the graph in a greedy way: the graph is built iteratively; at each iteration, the Fiedler vector is computed and the edge $(i,j)$ which maximizes $(\psi_{i} - \psi_{j})^{2}$ is added to the graph. }
+	\end{itemize}
+}
+
+\subsection{Fiedler Value Asymptotics}
+\frame{
+	\frametitle{Asymptotic Estimates for Fiedler Values [Braxton-Xu-Xiong-Y.'14]}
+	{\bf Key Estimates of Fiedler Value near Connectivity Threshold}.
+	\begin{align}
+	\label{eq:G0lam}
+	G_0(n,m)\colon \ & \frac{\lambda_2}{np} \approx a_1(p_0,n) := 1 - \sqrt{\frac{2}{p_0}}\sqrt{1-\frac{2}{n}} \\
+	\label{eq:Glam}
+	G(n,m)\colon \ &  \frac{\lambda_2}{np} \approx a_2(p_0,n):= 1 - \sqrt{\frac{2}{p_0}}\sqrt{1-p}
+	\end{align}
+	where $p_0:=2m/ (n \log n)\geq 1$, $p=\frac{p_0 \log n}{n}$ and
+	$$a(p_0)=1 - \sqrt{2/p_0} + O(1/p_0), \ \ \ \mbox{ for $p_0\gg 1$.} $$
+}
+
+
+\frame{
+	\frametitle{Without-replacement as good as Greedy!}
+	\begin{figure}[t!]
+	\begin{center}
+	\includegraphics[width=0.6\columnwidth]{../osting/ACHA/ACHA/figs/64++}
+	\caption{A comparison of the Fiedler value, minimal degree, and estimates $a(p_0)$, $a_1(p_0)$, and $a_2(p_0)$ for graphs generated via random sampling with/without replacement and greedy sampling at $n= 64$.}
+	\label{icml-simulatedvalid}
+	\end{center}
+	\end{figure}
+}
+
+\section{Game Theory and Others}
+
+\frame{
+	\frametitle{Applications of Hodge Decomposition}
+	\begin{itemize}
+	\item Boundary Value Problem (Schwarz, Chorin-Marsden'92)
+	\item Computer vision
+	\subitem Optical flow decomposition and regularization (Yuan-Schn\"{o}rr-Steidl'2008, etc.)
+	\subitem Retinex theory and shade-removal (Ma-Morel-Osher-Chien'2011)
+	\subitem Relative attributes (Fu-Xiang-Y. et al. 2014)
+	\item Sensor Network coverage (Jadbabai et al.'10)
+	\item Statistical Ranking or Preference Aggregation (Jiang-Lim-Y.-Ye'2011, etc.)
+	\item Decomposition of Finite Games (Candogan-Menache-Ozdaglar-Parrilo'2011)
+	\end{itemize}
+}
+
+
+\subsection{Game Theory: Multiple Utilities}
+\frame{
+\frametitle{Ranking in Economics: Utility and Voting}
+  \begin{figure}[!h]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/game.png}
+%\caption{Clicks implies preference}
+  \end{figure}
+}
+
+%\section[Game Theory]{Hodge Theory for Games}
+\frame{
+\frametitle{Multiple Utility Flows  for Games}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.3\textwidth]{./figures/battleSex_mat.pdf}
+\includegraphics[width=0.3\textwidth]{./figures/battleSex.pdf}
+\end{figure}
+Extension to multiplayer games: $G=(V,E)$ \\
+\begin{itemize}
+\item $V=\{(x_1,\ldots,x_n)=:(x_i,x_{-i})\}=\prod_{i=1}^n S_i$, $n$ person game;
+\item undirected edge: $\{(x_i,x_{-i}), (x_i^\prime,x_{-i})\}= E$
+\item each player has utility function $u_i(x_i,x_{-i})$;
+\item Edge flow (1-form): $u_i(x_i,x_{-i})-u_i(x^\prime_i,x_{-i})$
+\end{itemize}
+}
+
+\frame{
+\frametitle{Nash and Correlated Equilibrium}
+ $\pi(x_i, x_{-i})$, a joint distribution tensor on $\prod_i S_i$, satisfies $\forall x_i,x^\prime_i$,
+\[ \sum_{x_{-i}} \pi(x_i,x_{-i}) (u_i(x_i, x_{-i}) - u_i(x^\prime_i,x_{-i}))\geq 0, \]
+i.e. expected flow ($\E[\cdot|x_i]$) is nonnegative. Then,
+\begin{itemize}
+\item tensor $\pi$ is a \textcolor{red}{correlated equilibrium} (CE, Aumann 1974);
+\item if $\pi$ is a rank-one tensor,
+\[\pi(x)=\prod_i \mu(x_i) ,\]
+then it is a \textcolor{red}{Nash equilibrium} (NE, Nash 1951);
+\item pure Nash-equilibria are sinks;
+\item fully decided by the edge flow data.
+\end{itemize}
+}
+
+\frame{
+	\frametitle{What is a correct notion of Equilibrium?}
+	\begin{itemize}
+	\item Players are never independent in reality, e.g. Bayesian decision process (Aumman'87)
+	\item Finding NE is NP-hard, e.g. solving polynomial equations (Sturmfels'02, Datta'03)
+	\item Finding CE is linear programming, easy for graphical games (Papadimitriou-Roughgarden'08)
+	\item Some natural learning processes (best-response) converges to CE (Foster-Vohra'97)
+	\end{itemize}
+	}
+%
+%\frame{
+%	\frametitle{Low Rank CE Tensors}
+%	\begin{itemize}
+%	\item CE contains the convex hull of NE, nonnegative tensor rank $\sim \#(NE)$ (e.g. 2 pure NE in BoS)
+%	\end{itemize}
+%	\begin{theorem}[Landsberg-Manivel'03, Raicu]
+%	A tensor is of rank $\leq 2$ if and only if all its matrix \textcolor{red}{flattenings} are of rank $\leq 2$.
+%	\end{theorem}
+%	\begin{theorem}[Allman-Rhodes-Sturmfels-Zwiernik'13]
+%	A \textcolor{blue}{nonnegative} tensor has nonnegative rank $\leq 2$ if and only if it is of rank $\leq 2$ and
+%	\textcolor{red}{supermodular}.
+%	\end{theorem}
+%	\textcolor{red}{Open:} can we find low rank nonnegative tensor approximations subject to linear inequality constraints?
+%	}
+
+\frame{
+	\frametitle{Another simplification: Graphical Games}
+	\begin{itemize}
+	\item $n$-players live on a network of $n$-nodes
+	\item player $i$ utility only depends on its neighbor players $N(i)$ strategies
+	\item correlated equilibria allows a concise representation with parameters linear to the size of the network (Kearns et al. 2001; 2003)
+	\[ \pi(x) = \frac{1}{Z} \prod_{i=1}^n \psi_i(x_{N(i)}) \]
+	\subitem this is not rank-one, but \textcolor{red}{low-order interaction}
+	\subitem reduce the complexity from $O(e^{2^n})$ to $O(n e^{2^d})$ ($d=\max_i |N(i)|$)
+	\subitem polynomial algorithms for CE in \emph{tree} and \emph{chodal} graphs.
+	\end{itemize}
+	}
+%
+%
+\subsection{Hodge Decomposition of Finite Games}
+\frame{
+\frametitle{Hodge Decomposition of Finite Games}
+\begin{theorem}[Candogan-Menache-Ozdaglar-Parrilo,2011]
+Every finite game admits a unique decomposition:
+\[ \mbox{Potential Games} \oplus \mbox{Harmonic Games} \oplus \mbox{Neutral Games} \]
+\end{theorem}
+Furthermore:
+\begin{itemize}
+\item Shapley-Monderer Condition: Potential games $\equiv$ quadrangular-curl free
+\item Extending $G=(V,E)$ to complex by adding quadrangular cells, harmonic games can be further decomposed into \textcolor{red}{(quadrangular) curl games}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.9\textwidth]{figures/hodgegame.png}
+%%\caption{Start from a movie -- \emph{The Social Network}}
+%  \end{figure}
+\end{itemize}
+}
+
+
+\frame{
+	\frametitle{Bimatrix Games}
+	 For bi-matrix game $(A,B)$,
+	\begin{itemize}
+	\item  potential game is decided by $((A+A')/2,(B+B')/2)$
+%	\subitem pure Nash equilibria are the set of local maxima
+%	\subitem Correlated equilibria: $\supseteq$the convex hull of such maxima (e.g. Neyman'97)
+	\item harmonic game is zero-sum $((A-A')/2,(B-B')/2)$
+%	\subitem only mixed Nash equilibria
+	\item Computation of Nash Equilibrium:
+	\subitem each of them is tractable
+	\subitem however direct sum is NP-hard
+	\subitem approximate potential game leads to approximate NE
+%	\item a special case of Leontief Equilibrium for Exchange Market
+	\end{itemize}
+}
+
+
+
+
+
+\frame{
+\frametitle{Example: Hodge Decomposition of Prisoner's Dilemma}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/hodgegame.png}
+%\caption{Start from a movie -- \emph{The Social Network}}
+  \end{figure}
+  Note: Shapley-Monderer Condition $\equiv$ Harmonic-free $\equiv$ quadrangular-curl free
+}
+
+
+\frame{
+\frametitle{What Does Hodge Decomposition Tell Us?}
+Does it suggest myopic greedy players might lead to
+\[ \mbox{transient potential games} + \mbox{\textcolor{red}{periodic equilibrium}}? \]
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.16\textwidth]{./figures/Nash-in-Fine-Hall_2013.png} \ \ \ 
+\includegraphics[width=0.35\textwidth]{figures/history-cycle}
+%\caption{Start from a movie -- \emph{The Social Network}}
+  \end{figure}
+}
+
+
+%\section{Summary}
+
+
+%
+%\subsection{Extensions in Game Theory: Multiple Utilities}
+%\frame{
+%\frametitle{Hodge Decomposition in Game Theory}
+%%\begin{figure}[!h]
+%%%\centering
+%%\includegraphics[width=0.3\textwidth]{./figures/battleSex_mat.pdf}  
+%%\includegraphics[width=0.3\textwidth]{./figures/battleSex.pdf} 
+%%\end{figure}
+%%Extension to multiplayer games: $G=(V,E)$ \\
+%\begin{itemize}
+%\item Extension to multiple utilities in finite games:
+%\begin{theorem}[Candogan-Menache-Ozdaglar-Parrilo,2011]
+%Every finite game admits a unique decomposition:
+%\[ \mbox{Potential Games} \oplus \mbox{Harmonic Games} \oplus \mbox{Neutral Games} \] 
+%\end{theorem}
+%\item Does it suggest myopic greedy players might lead to
+%\[ \mbox{transient potential games} + \mbox{\textcolor{red}{periodic equilibrium}}? \]
+%\end{itemize}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.16\textwidth]{./figures/Nash-in-Fine-Hall_2013.png} \ \ \ 
+%\includegraphics[width=0.35\textwidth]{figures/history-cycle} 
+%%\caption{Start from a movie -- \emph{The Social Network}}
+%  \end{figure} 
+%%\item $V=\{(x_1,\ldots,x_n)=:(x_i,x_{-i})\}=\prod_{i=1}^n S_i$, $n$ person game;
+%%\item undirected edge: $\{(x_i,x_{-i}), (x_i^\prime,x_{-i})\}= E$ 
+%%\item each player has utility function $u_i(x_i,x_{-i})$; 
+%%\item Edge flow (1-form): $u_i(x_i,x_{-i})-u_i(x^\prime_i,x_{-i})$
+%}
+%
+%\frame{
+%\frametitle{Example: Battle of the Sexes}
+%\begin{figure}[!h]
+%%\centering
+%\includegraphics[width=0.3\textwidth]{./figures/battleSex_mat.pdf}  
+%\includegraphics[width=0.3\textwidth]{./figures/battleSex.pdf} 
+%\end{figure}
+%\begin{itemize}
+%\item $V=\{(x_1,\ldots,x_n)=:(x_i,x_{-i})\}=\prod_{i=1}^n S_i$, $n$ person game;
+%\item undirected edge: $\{(x_i,x_{-i}), (x_i^\prime,x_{-i})\}= E$ 
+%\item each player has utility function $u_i(x_i,x_{-i})$; 
+%\item Edge flow (1-form): $u_i(x_i,x_{-i})-u_i(x^\prime_i,x_{-i})$
+%\end{itemize}
+%}
+
+
+%\frame{
+%	\frametitle{Other sampling models [Xu et al. 2012]}
+%	\begin{itemize}
+%	\item Random $k$-regular graphs
+%	\subitem Kim-Vu sandwich theorem/conjecture: coupling with Erd\"{o}s-R\'{e}nyi if edges are dense enough
+%	\item Preferential-attachment random graphs
+%	\subitem online but dependent (active) sampling
+%	\subitem coupling with edge-independent process (Chung-Lu'06)
+%	\item Geometric random graphs
+%	\subitem ranking items from Euclidean feature space
+%	\item Active sampling?
+%	\subitem Osting, Brune, and Osher, \emph{ICML} 2013
+%	\subitem Osting, Xiong, Xu, and Y., 2014
+%	\end{itemize}
+%}
+
+%\subsubsection{Online Algorithms}
+%
+%\frame{
+%\frametitle{Persistent Homology: online algorithm for topology tracking (e.g Edelsbrunner-Harer'08)}
+%
+% \begin{columns}
+%\begin{column}{0.6\textwidth}
+%\begin{figure}[h]
+%\centering
+%	\includegraphics[width=0.7\textwidth]{figures/persistent.png}
+%	\caption{Persistent Homology Barcodes}
+%\end{figure}
+%\end{column}
+%
+%\begin{column}{0.4\textwidth}
+%\begin{itemize}
+%\item vertice, edges, and triangles etc. sequentially added
+%\item online update of homology
+%\item $O(m)$ for surface embeddable complex; and $O(m^{2.xx})$  in general ($m$ number of simplex)
+%\end{itemize}
+%\end{column}
+%\end{columns}
+%}
+%
+
+
+%
+%\subsubsection{Robust Ranking}
+%
+%\frame{
+%	\frametitle{Robust Ranking with Sparse Outliers}
+%	For each $(i,j) \in E$,
+%	\begin{equation}
+%	y_{\alpha ij} = \beta_0 + \beta_i - \beta_j + z_{\alpha ij}
+%	\end{equation}
+%	where
+%	\begin{itemize}
+%	\item $\beta_V$: global ranking score on $V$
+%	\item $\beta_0$: head-advantage (home- in NBA, white- in chess)
+%	\item $z_{ij}$ error
+%	\[ z_{\alpha ij} = \gamma_{\alpha ij} + \varepsilon_{\alpha ij} \]
+%	\subitem[A0a] $\gamma_{\alpha ij}$ symmetric $p$-sparse (zero w.p. $p$ and median $0$)
+%	\subitem[A0b] $\varepsilon_{\alpha ij}\sim \NN(0,\sigma^2/w_{ij})$
+%	\end{itemize}
+%}
+%
+%\frame{
+%	\frametitle{Huber's LASSO [Xiong-Cheng-Y.'13, Xu-Xiong-Huang-Y.'13]}
+%	\begin{itemize}
+%	\item Robust ranking can be formulated as a Huber's LASSO problem (Gannaz'07, She-Owen'09, Fan-Tang-Shi'12)
+%	\item Sparse outliers are sparse approximation of cyclic rankings (curl+harmonic)
+%	\item Exact recovery is possible without Gaussian noise
+%	\item Outlier detection is possible against Gaussian noise, provided
+%	\subitem Irrepresentable condition (e.g. random graph)
+%	\subitem Outliers have large enough magnitudes
+%	\end{itemize}	
+%	}
+%%
+%%\frame{
+%%	\frametitle{Neyman-Scott'48: Incidental Paramters}
+%%	A special case of Neyman-Scott'48:
+%%	\begin{itemize}
+%%	\item \textcolor{red}{Structural parameters}: global rating score $\beta$ which appears in \textcolor{red}{infinite} number of observations
+%%	\item \textcolor{red}{Incidental parameters}: outliers $\gamma_{\alpha ij}$ which appears in \textcolor{red}{finite} (exactly once) number of observations
+%%	\end{itemize}
+%%	Maximum Likelihood generally suffers from:
+%%	\begin{itemize}
+%%	\item \textcolor{red}{Consistency} is destroyed with the presence of incidental parameters
+%%	\item \textcolor{red}{Efficiency (asymptotic normality)} is lost even with consistency
+%%	\end{itemize}
+%%}
+%
+%%\frame{
+%%	\frametitle{Huber's Robust Regression}
+%%\begin{itemize}
+%%\item Robust regression with Huber's loss
+%%\[
+%% \min_{\beta} \frac{1}{2} \sum_{(i,j)\in E}w_{ij} \rho_\lambda (y_{ij} - \beta_0 - (\beta_i-\beta_j )),
+%%\]
+%%where $\rho_\la(x)$ is Huber's loss function defined by
+%%    \begin{equation*}
+%%\rho_\lambda(x) =
+%%    \left\{
+%%    \displaystyle \begin{array}{ll}
+%%        x^2/2, & \textrm{if $|x|\leq \lambda$}\\
+%%        \lambda |x| - \lambda^2/2, & \textrm{if $|x|> \lambda$.}
+%%    \end{array}
+%%    \right.
+%%    \end{equation*}
+%%    \end{itemize}
+%%}
+%%
+%%\frame{
+%%	\frametitle{Equivalent Huber's LASSO}
+%%	 (Gannaz'07, She-Owen'09, Fan-Tang-Shi'12)
+%%	\[ \min_{\beta\in \Omega,\ga} \frac{1}{2} \|y-X\beta - \ga\|_{2,w}^2 + \la \|\ga\|_{1,w} + \eta \|\beta_V \|_2^2\]
+%%	\begin{itemize}
+%%	\item $\|\gamma\|_{1,w}$ for sparse outliers
+%%	\item $X$ non full-rank, regularization $\|\beta_V\|_2^2$ for well-posedness
+%%\begin{equation*} \label{eq:design}
+%%X := \left \{
+%%\begin{array}{cc}
+%%[\1,\grad], & \mbox{if $\beta^\ast_0\neq 0$ (under Assumption A3a)} ;\\
+%%\grad, & \mbox{if $\beta^\ast_0 =0$ (under Assumption A3b)} .
+%%\end{array}
+%%\right.
+%%\end{equation*}
+%%Here $\1=[1,\ldots,1]^T\in R^{|E|}$, and the gradient matrix $\grad \in \R^{E\times V}$ is defined by $\grad(e=(i,j),i)=1$, $\grad(e=(i,j),j)=-1$, and otherwise zero.
+%%	\item For small enough $\eta>0$, it imposes the additional constraint $\sum_{i\in V} \beta_{i}=0$ to the solution
+%%	\end{itemize}
+%%}
+%
+%
+%%\frame{
+%%\frametitle{$\lambda=0$: $l_1$-norm ranking against pure Sparse Outliers}	
+%%\begin{equation}
+%%(L1): \ \ \min_{\beta} \|y-X\beta\|_{1,w}:=\sum_{(i,j)\in E}w_{ij} |y_{ij} - \beta_0 - (\beta_i-\beta_j)|,
+%%\end{equation}
+%%\begin{itemize}
+%%\item Hochbaum-Levine 2006, Jiang-Lim-Y.-Ye 2011, Osting-Darbon-Osher 2012,
+%%\item The primal problem of L1 is a linear programming with a totally unimodular constraint matrix: integral $y\Rightarrow$ integral $\beta$ .
+%%\item The dual problem of L1 is a maximum-flow problem: bounded cyclic rankings with a maximal correlation with $y_{ij}$.
+%%\subitem Dual variables can be used to identify outliers.
+%%\end{itemize}
+%%}
+%
+%
+%
+%\frame{
+%	\frametitle{Exact Recover against pure Sparse Outliers}	
+%\begin{theorem}[Xiong-Cheng-Y.'2013] Let $G(n,q)$ be an Erd\"{o}s-R\'{e}nyi
+% Random Graph with $n$ nodes and each edge drawn independently with probability $q\in (0,1]$. \\
+%(A) Suppose that paired comparison data $y$ is collected on $G(n,q)$ subject to the linear model with symmetric $p$-sparse outliers ($p\in [0,1]$). Then with probability tending to one the L1 solution exactly recovers the global ranking $\beta^\ast$ if
+%\[ p \gg O\left( \sqrt{\frac{\log n }{ n q} } \right). \]
+%\end{theorem}
+%Note: no method can recover if
+%\[ p \ll O\left( \frac{1 }{\sqrt{ n q} } \right). \]
+%}
+%
+%%\frame{
+%%	\frametitle{Exact Recover against pure Sparse Outliers}	
+%%\begin{theorem}[continued] (B) There exists a setting for measurements and symmetric $p$-sparse outliers such that no method will exactly recover the global ranking with high probability if
+%%\[ p \ll O\left( \frac{1 }{\sqrt{ n q} } \right). \]
+%%\end{theorem}
+%%}
+%
+%
+%%\frame{
+%%	\frametitle{Basic Assumptions}
+%%	\begin{itemize}
+%%	\item[A1.] $G$ weakly connected
+%%	\item[A2.] $\sum_{i\in V}\beta_i=0 $
+%%	\item[A3a.] If $\beta_0\neq 0$, $\sum_{(i,j)\in E} w_{ij} = \sum_{(j,i)\in E} w_{ji}$
+%%	\item[A3b.] If $\beta_0 = 0$, undirected graph with skew-symmetric data $y_{ji} = - y_{ij}$
+%%	\end{itemize}
+%%	\begin{equation}
+%%	y = X \beta + z
+%%	\end{equation}	
+%%}
+%
+%
+%%\frame{
+%%	\frametitle{Sparsity of Outliers saves...}
+%%	Fortunately, sparsity of outliers may lead to partial consistency
+%%	\begin{itemize}
+%%	\item \textcolor{red}{Sparse large outliers $S_0$}: $m_0=m p_0$ outliers
+%%	\[ |\gamma_{S_0}|\geq O( \sigma\sqrt{\log m}) \]
+%%	\item \textcolor{red}{Nuisance outliers $S_1$}: $m(1-p-p_0)$ outliers
+%%	\[ |\gamma_{S_1}|\leq O(\sigma) \]
+%%	\item Otherwise: $mp$ clean observations
+%%	\end{itemize}
+%%}
+%%
+%%\frame{
+%%	\frametitle{Outlier Detection LASSO}
+%%\begin{equation} \label{eq:oLasso}
+%%\min_{\ga} \frac{1}{2} \| \proj_{\Gamma} W^{1/2} y - \proj_{\Gamma} W^{1/2} \ga \|_2^2 + \la \|\ga\|_{1,w}.
+%%\end{equation}
+%%\begin{itemize}
+%%\item $\Gamma\subseteq l^2(E)$ and $\Gamma \perp col(W^{1/2} X)$.
+%%\item For Erd\"{o}s-R\'{e}nyi random graph $G(n,q)$, $dim(\Gamma)/dim(l^2(E)) \sim 1 - 1/\log n \to 1$.
+%%\item Let $\Psi$ be an $l$-by-$|E|$ ($0< l \leq |E|$) projection matrix from $l^2(E)$ into $\Gamma$.
+%%\end{itemize}
+%%}
+%%
+%%
+%%\frame{
+%%	\frametitle{Partial Sign Consistency for Outlier Detection}
+%%	\begin{theorem}[Sign Consistency, Xiong-Cheng-Y.'2013]
+%%\[ \sign(\hat{\ga}_{S_0})=\sign(\ga_{S_0}^\ast) \ \ \ \mbox{with $\hat{\ga}_{k}=0$ for $k\not\in S_0$} \]
+%%if the following holds and $\lambda \geq O(\sigma \sqrt{\log m})$
+%%\begin{itemize}
+%%\item (C1: Restricted Eigenvalue)
+%%\[ \Lambda_{\min} \left(\frac{1}{l} \Psi_S^T \Psi_S \right) = C_{\min} > 0. \]
+%%\item (C2: Irrepresentability) For some constant $\eta\in (0,1]$,
+%%\[ \| W_{S^c}^{-1/2} \Psi^T_{S^c} \Psi_{S} (\Psi^T_{S} \Psi_{S})^{-1} W_S^{1/2} \sign (\ga^\ast_S) \|_\infty \leq 1 -\eta. \]
+%%%(a) for some constant $\eta\in (0,1]$,
+%%%\[ \| W_{S^c}^{-1/2} \Psi^T_{S^c} \Psi_{S} (\Psi^T_{S} \Psi_{S})^{-1} W_S^{1/2} \sign (\ga^\ast_S) \|_\infty \leq 1 -\eta; \]
+%%%or (b) slightly stronger
+%%%\[ \| W_{S^c}^{-1/2} \Psi^T_{S^c} \Psi_{S}(\Psi^T_{S} \Psi_{S})^{-1} W_S^{1/2} \|_\infty \leq 1 -\eta; \]
+%%\item (C3: Large Outlier)  $\ga_{min} :=\min_{i\in S_0} |\ga^\ast_i| \gg O(\la)$
+%%\end{itemize}
+%%\end{theorem}
+%%}
+%%
+%%\frame{
+%%	\frametitle{$l_2$-consistency for structural parameters}
+%%	\begin{theorem}[$l_2$-Consistency]
+%%	Moreover
+%%	\begin{itemize}
+%%	\item Sparsity:
+%%	\[  s=m(1-p) \ll O\left(\sqrt{\frac{mp}{n}}\right)\Rightarrow p \gg 1 - O\left( \frac{1}{\sqrt{mn}}\right)\]
+%%	\item Conductance bound: $\Pr(\lambda_{1}^{-1}(\hat{\Delta}_0) \geq \kappa_n) \to 0$
+%%	\subitem General graphs with diameter $D$: $\kappa_n \leq Dn$
+%%	\subitem Erd\"{o}s-R\'{e}nyi: $\kappa_n \leq n \log n$
+%%%	\item Large outliers:
+%%%	\[ \min_{i\in S_0} |\ga^\ast_i| \geq O(\sigma \sqrt{\log m}) \]
+%%	\end{itemize}
+%%	Then for small $\mu>0$,
+%%	\[ \| \hat{\beta} - \beta^\ast \|_2 \leq O\left (\sigma \sqrt{\frac{\kappa_n\log m}{mp}} \right) \]
+%%	\end{theorem}
+%%	
+%%	}
+%%
+%%\frame{
+%%	\frametitle{Control $\kappa_n$: active sampling}
+%%	\begin{itemize}
+%%	\item $\kappa_n$ is an upper bound for inverse smallest nonzero eigenvalue
+%%	\[ \Pr(\lambda_{1}^{-1}(\hat{\Delta}_0) \geq \kappa_n) \to 0 \]	
+%%	\item Ostings-Brune-Osher'2013
+%%	\subitem Fisher information maximization
+%%	\subitem greedy algorithm to find graphs with smallest $\kappa_n$
+%%	\end{itemize}
+%%	}
+%
+%%\frame{
+%%	\frametitle{$\lambda = \infty$: Pure Gaussian Noise}
+%%	\begin{equation}
+%%	y_{ij} = \beta_0 + \beta_i - \beta_j + \varepsilon_{ij}
+%%	\end{equation}
+%%	where Gauss-Markov theorem tells us that if under A3a,
+%%\[ \frac{1}{m} X^T W X =
+%%\left(
+%%\begin{array}{cc}
+%%1 & 0  \\
+%%0 & \frac{1}{m} \De_0
+%%\end{array}
+%%\right) \to
+%%\left(
+%%\begin{array}{cc}
+%%1 & 0 \\
+%%0 & \bar{\De}_0
+%%\end{array}
+%%\right) =: \bar{\Sigma}, \ \ \ \ \ m=|E|
+%%\]
+%%then
+%%\begin{eqnarray}
+%%(L2): & \displaystyle \min_{\beta\in \Omega} \|y-X\beta\|^2_{2,w}:=\sum_{(i,j)\in E} w_{ij} (y_{ij} - \beta_0 - (\beta_i - \beta_j))^2, &
+%%\end{eqnarray}
+%%has the minimal norm least square solution $\sqrt{m} (\hat{\beta}-\beta)\to \NN(0,\bar{\Sigma})$.
+%%}
+%
+
+\frame{
+\frametitle{Basic Reference}
+\begin{itemize}
+\item Jiang, Lim, Yao, and Ye, \emph{Mathematical Programming}, 127(1): 203-244, 2011
+\item Candogan, Menache, Ozdaglar, and Parrilo, \emph{Mathematics of Operational Research}, 36(3): 474-503, 2011
+%\item Ma, Morel, Osher, and Chien, \emph{Tech Report CAM11-13}, 2011
+\item Tran, N. M. Pairwise ranking: choice of method can produce arbitrarily different rank order. arXiv:1103.1110v1 [stat.ME], 2011
+\item Xu, Jiang, Yao, Huang, Yan, and Lin, \emph{ACM Multimedia}, 2012
+\end{itemize}
+}
+
+\frame{
+	\frametitle{More reference}
+	\begin{itemize}
+	\item Random graph sampling models: Erd\"{o}s-R\'{e}nyi and beyond
+	\subitem Xu, Jiang, Yao, Huang, Yan, and Lin, \emph{IEEE Trans Multimedia}, 2012
+	\item Online algorithms
+	\subitem Xu, Huang, and Yao, \emph{ACM Multimedia} 2012
+	\item $l_1$-norm ranking
+	\subitem Osting, Darbon, and Osher, 2012
+	\item Robust ranking: Huber's Lasso
+	\subitem Xu, Xiong, Huang, and Yao, \emph{ACM Multimedia} 2013
+	\item Mixed Effect HodgeRank: 
+	\subitem Xu, Xiong, Cao, and Yao, \emph{ACM Multimedia} 2016
+	\item Active sampling
+	\subitem Osting, Brune, and Osher, \emph{ICML} 2013
+	\subitem Osting, Xiong, Xu, and Yao, \emph{ACHA} 2016
+	\end{itemize}
+}
+
+%%\frame{
+%%\frametitle{An Intuition from Random Matrix Theory}
+%% Concentration of eigenvalues (\textcolor{blue}{Chung-Radcliffe 2011})
+%% \[ |\lambda_i (\tilde{\Delta}_0) - \lambda_i (\bar{\Delta}_0) | \leq  O\left(\sqrt{np \log\frac{n}{\delta}}\right) \]
+%%where
+%% \[
+%% \bar{\Delta}_0(i,j) = np I_n - p e e^T = \left\{
+%% \begin{array}{lr}
+%% -p, & i\neq j \\
+%% (n-1)p, & i=j
+%% \end{array}
+%% \right.
+%% \]
+%% has one eigenvalue $0$, and one eigenvalue $np$ of multiplicity $n-1$
+%%\begin{itemize}
+%% \item $p>>n^{-1}\log n$, almost always large eigenvalues $np=\Omega(1)$;
+%%\item $p<<n^{-1-\epsilon}$, almost always small eigenvalues $np=o(1)$;
+%% \end{itemize}
+%%}
+%%
+%%\frame{
+%%\frametitle{For 1-Laplacian ...}
+%% \[
+%% \tilde{\Delta}_1^{(l)}(ij,kl) =\delta_0\circ\delta_0^\ast=\left\{
+%% \begin{array}{lr}
+%% 2X_{ij} \to \textcolor{red}{2p}, & \{i,j\}=\{k,l\} \\
+%%  \xi^{(l)}_{ij,kl} X_{ij} X_{jk} \to \textcolor{red}{ \xi^{(l)}_{ij,kl} p^2}, & \textrm{otherwise}
+%% \end{array}
+%% \right.
+%% \]
+%% where \textcolor{blue}{lower}-coincidence number $\xi^{(l)}_{ij,kl} =\pm 1$ if $|\{i,j\} \cap \{k,l\}|=1$ and $0$ otherwise.
+%%  \[
+%% \tilde{\Delta}_1^{(u)}(ij,kl) =\delta_1^\ast\circ\delta_1=\left\{
+%% \begin{array}{lr}
+%% \sum_{ij\tau\in T}  X_{ij} X_{j\tau} X_{\tau i}  \to \textcolor{red}{\frac{(np)(np^2)^n}{\log np^2}}, & ij = kl \\
+%%  \xi^{(u)}_{ij,kl} X_{ij} X_{jk} X_{ki} \to \textcolor{red}{  \xi^{(u)}_{ij,kl} p^3}, & \textrm{otherwise}
+%% \end{array}
+%% \right.
+%% \]
+%% where \textcolor{blue}{upper}-coincidence number $\xi^{(u)}_{ij,kl} =\pm 1$ if $|\{i,j\} \cup \{k,l\}|=3$ and $0$ otherwise.
+%%
+%% \begin{itemize}
+%% \item \textcolor{blue}{Forman (2003)}: \textcolor{red}{$Ric_{\bar{\Delta}_1}$(ij) = diagonal - sum of abs(off-diag)}
+%% \item $p<<n^{-1}$ or $p>>n^{-1/2}$, $\bar{\Delta}_1$ \textcolor{blue}{strongly diagonal dominant}
+%% \end{itemize}
+%%}
+%
+
+
+%\section{Application}
+%\subsection{Netflix Example}
+%\frame{
+%	  \frametitle{Choose 6 Netflix Movies with Dynamic Drifts}
+%	\begin{figure}
+%	\includegraphics[width=0.8\textwidth]{figures/nflix6.jpg}
+%	\end{figure}
+%}
+%
+%\frame{
+%	  \frametitle{Model Selection by Curls}
+%	\begin{figure}
+%	\includegraphics[width=0.9\textwidth]{figures/nflix6_comp.jpg}
+%	\end{figure}
+%	\tiny{ MRQE: Movie-Review-Query-Engine (http://www.mrqe.com/)}
+%}
+%
+
+
+%\subsection{Online Video Quality Evaluation}
+%\frame{
+%\frametitle{Data Description}
+%\begin{itemize}
+%\item Dataset:  LIVE Database
+%\item 10 different reference videos and 15 distorted versions of
+%each reference, for a total of 160 videos.
+%\item 32 rounds of complete comparisons are collected from 209 observers in lab. Because each round needs 1200 paired comparisons, the total number of comparisons for 32 rounds is $38400 = 32 \times 1200$.
+%\item \textcolor{brown}{Note}: we do not use the subjective scores in LIVE,
+%we only borrow the video sources it provides.
+%\end{itemize}
+% \begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.2\textwidth]{figures/System_ScreenSaver.png}
+%\caption{Data collected from PKU junior undergraduates.}
+%  \end{figure}
+%
+%}
+%
+%\frame{
+%\frametitle{HodgeRank with Complete Data}
+% \begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.6\textwidth]{figures/complete10.png}
+%\caption{Angular Transform and Uniform models are the best two.}
+%  \end{figure}
+%}
+%
+%\frame{
+%\frametitle{Sampling Efficiency}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.5\textwidth]{figures/exp3.png}
+%\includegraphics[width=0.5\textwidth]{figures/table3.png}
+%%\caption{Left: with just $5\%$ samples, the $\chi_G$ is connected and loop-free w.h.p.; Right: high accuracy after 100 bootstraps}
+%  \end{figure}
+%}
+%
+%\frame{
+%\frametitle{Convergence of Online Learning Algorithms}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.9\textwidth]{figures/online_s0=0.png}
+%%\caption{Start from a movie -- \emph{The Social Network}}
+%  \end{figure}
+%}
+
+%\frame{
+%\frametitle{Discussions on HodgeRank with random graphs}
+%\begin{itemize}
+%\item \textcolor{red}{Erd\"{o}s-R\'{e}nyi} random graphs give the simpliest sampling scheme, comparable to \textcolor{blue}{I.I.D.} sampling in machine learning
+%\item General random graphs (unlabeled) can use nonparametric models derived from \textcolor{red}{generalized de Finetti's theorem} (Bickel, Chen 2009)
+%\item For computational concern, consider random graphs with small condition numbers, e.g. \textcolor{red}{expanders}
+%\item For balancing concern, consider \textcolor{red}{random $k$-regular graphs}
+%\item \textcolor{red}{Markov sampling} (Aldous, Vazirani 1990; Smale, Zhou 2007)
+%\item \textcolor{red}{Concentration inequalities with dependent random variables} for high-dim Laplacians
+%\end{itemize}
+%}
+
+
+
+
+\frame{
+\frametitle{Summary}
+\begin{itemize}
+\item New challenges from modern crowdsourced ranking data
+\item Hodge decomposition provides generalized Borda count in classical Social Choice
+\subitem gradient flow, as generalized Borda count scores
+\subitem triangular curls/cycles, as local inconsistency or groups
+\subitem harmonic flow, as global inconsistency or voting chaos
+\end{itemize}
+Such a decomposition has been seen in \emph{computational fluid mechanics, computer vision, machine learning, sensor networks, and game theory}, etc. More are coming... 
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.3\textwidth]{./figures/Iceberg.jpg}  
+\end{figure}
+}
+
+
+
+%\frame{
+%\frametitle{Acknowledgement}
+%\begin{itemize}
+%\item Multimedia group:
+%\subitem \emph{\textcolor{red}{Qianqian Xu}}, Postdoc at BICMR, PKU
+%\subitem \emph{Qingming Huang}, GUCAS; \emph{Tingting Jiang}, PKU
+%\item Methodology:
+%\subitem \emph{\textcolor{red}{Jiechao Xiong}}, Stat PhD student in PKU
+%\subitem \emph{Braxton Ostings}, UCLA; \emph{Xi CHen}, NYU
+%\item Computer vision group:
+%\subitem \emph{\textcolor{red}{Yanwei Fu}}, EECS PhD student at University of London
+%\subitem \emph{Tao Xiang}, \emph{Tim Hospedales}, \emph{Shaogang Gong}, QMUL
+%\subitem \emph{Yizhou Wang}, PKU
+%\item Other colleague
+%\subitem  \emph{\textcolor{red}{Lek-Heng Lim}}, \emph{Stan Osher}, \emph{Yinyu Ye}, \emph{Sayan Mukherjee}, \emph{Pablo Parrilo} %, \emph{Lie Wang} (MIT), Art Owen (Stanford), \emph{Anil Hirani} (UIUC)
+%%\item Grants:
+%%\subitem National Basic Research Program of China (973 Program), NSFC, Microsoft Research - Asia, Professorship in the 100-Talent Program at PKU
+%\end{itemize}
+%}
+%
+\end{document}
+
